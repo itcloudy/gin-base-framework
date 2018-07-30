@@ -1,5 +1,11 @@
 # Gin Base Framework
 
+请在配置文件: conf/config.yml中修改数据链接和端口说明
+运行程序:
+```go
+go build
+./gin-base-framework
+```
 ## 完成的功能
 * jwt认证
 * casbin权限控制,支持角色集成，根据角色获得菜单
