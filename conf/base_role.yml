@@ -1,0 +1,4 @@
+# base role all users has this role
+roles:
+  - name: 基本用户权限
+  -

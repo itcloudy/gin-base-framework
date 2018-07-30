@@ -1,0 +1,925 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Dongjing server",
+        "title": "gin-base-framework Server api",
+        "termsOfService": "https://github.com/hexiaoyun128",
+        "contact": {},
+        "license": {},
+        "version": "2.0"
+    },
+    "paths": {
+        "/auth/banner_group": {
+            "post": {
+                "description": "用户用户openid",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "微信"
+                ],
+                "summary": "用户用户openid",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "微信Code",
+                        "name": "code",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/file_upload": {
+            "post": {
+                "description": "文件上传",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文件上传"
+                ],
+                "summary": "文件上传",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "上传文件",
+                        "name": "file",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/menu/{id}": {
+            "get": {
+                "description": "菜单获得",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "菜单"
+                ],
+                "summary": "菜单获得",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "菜单获得ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ]
+            },
+            "put": {
+                "description": "菜单修改",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "菜单"
+                ],
+                "summary": "菜单修改",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "轮播图组ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "是否有效",
+                        "name": "active",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "time",
+                        "description": "开始时间",
+                        "name": "start_date",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "time",
+                        "description": "结束时间",
+                        "name": "end_date",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "轮播组名称",
+                        "name": "name",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "轮播时间间隔(s)",
+                        "name": "display_time",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{\"id\":1,\"parent_id\":0,\"name\":\"测试修改\",\"route\":\"route-system\",\"component\":\"SystemComponent\",\"icon\":\"system-icon\",\"sequence\":1},\"message\":\"success\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/menutree": {
+            "get": {
+                "description": "系统菜单树,系统管理员才可用",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "菜单"
+                ],
+                "summary": "系统菜单树",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":[{\"id\":1,\"parent_id\":0,\"name\":\"系统设置\",\"route\":\"route-system\",\"component\":\"SystemComponent\",\"icon\":\"system-icon\",\"sequence\":1,\"children\":[{\"id\":2,\"parent_id\":1,\"name\":\"系统用户\",\"route\":\"/system/user\",\"icon\":\"system-user\",\"sequence\":1}]},{\"id\":3,\"parent_id\":0,\"name\":\"分类模块\",\"route\":\"route_modyle\",\"component\":\"Module\",\"icon\":\"module\",\"sequence\":2,\"children\":[{\"id\":4,\"parent_id\":3,\"name\":\"模块列表\",\"route\":\"/auth/category\",\"icon\":\"category\",\"sequence\":1}]},{\"id\":5,\"parent_id\":0,\"name\":\"公司管理\",\"route\":\"route_company\",\"component\":\"Company\",\"icon\":\"company\",\"sequence\":2,\"children\":[{\"id\":6,\"parent_id\":5,\"name\":\"公司分类\",\"route\":\"route_company_1\",\"component\":\"Company\",\"icon\":\"company\",\"sequence\":2,\"children\":[{\"id\":7,\"parent_id\":6,\"name\":\"一级公司\",\"route\":\"route_company_2\",\"component\":\"Company\",\"icon\":\"company\",\"sequence\":2},{\"id\":8,\"parent_id\":6,\"name\":\"二级公司\",\"route\":\"route_company_3\",\"component\":\"Company\",\"icon\":\"company\",\"sequence\":2}]}]}],\"message\":\"success\"}}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/pay/wxapp": {
+            "post": {
+                "description": "微信支付",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "微信"
+                ],
+                "summary": "微信支付",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "费用（分），1元=100分，",
+                        "name": "total_fee",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "币种",
+                        "name": "fee_type",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "公司等级",
+                        "name": "level",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "购买月数",
+                        "name": "month",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "微信openid",
+                        "name": "open_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "商品名称",
+                        "name": "pay_statement",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/refresh": {
+            "get": {
+                "description": "Token刷新",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Token刷新"
+                ],
+                "summary": "Token刷新",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":\"Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjc1MzIxNjI5OTEsIk5hbWUiOiJhZG1pbiIsIlJvbGUiOm51bGwsIlVzZXJJZCI6MSwiSXNBZG1pbiI6dHJ1ZX0.je9O18vV-E-CENlXnGUk1eztLChZrd9kqsfyCLjg02PE_VNFu6UUlg952qveuJ8yL1yPe-GEdA-FYqMFrqWk1ekQAbDphbO15oD0GpvHZhiTGL3XunNFU_LudLvoOuNEAnEACHxklfMY1J37jesrehhoqxA5pcp0ushINUprsds\",\"message\":\"success\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/role": {
+            "post": {
+                "description": "角色创建",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "角色"
+                ],
+                "summary": "角色创建",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "角色名称",
+                        "name": "name",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"message\":\"ok\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/role/{id}": {
+            "get": {
+                "description": "角色获得",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "角色"
+                ],
+                "summary": "角色获得",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "角色ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "角色名称",
+                        "name": "name",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"message\":\"ok\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "角色更新",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "角色"
+                ],
+                "summary": "角色更新",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "角色ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "角色名称",
+                        "name": "name",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"message\":\"ok\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "角色删除",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "角色"
+                ],
+                "summary": "角色列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "角色ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"message\":\"ok\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/roles": {
+            "get": {
+                "description": "角色列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "角色"
+                ],
+                "summary": "角色列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数量",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "排序",
+                        "name": "order",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"message\":\"ok\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/self": {
+            "get": {
+                "description": "个人信息获得",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户"
+                ],
+                "summary": "个人信息获得",
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{\"id\":1,\"name\":\"admin\",\"alias\":\"\",\"email\":\"admin@block.vc\",\"password\":\"\",\"roles\":[],\"openid\":\"\",\"active\":true,\"is_admin\":true},\"message\":\"success\"}}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "个人信息修改",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户"
+                ],
+                "summary": "个人信息修改",
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{\"id\":1,\"name\":\"admin\",\"alias\":\"\",\"email\":\"admin@block.vc\",\"password\":\"\",\"roles\":[],\"openid\":\"\",\"active\":true,\"is_admin\":true},\"message\":\"success\"}}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/user/{id}": {
+            "get": {
+                "description": "用户获得,只有管理员才可调用",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户"
+                ],
+                "summary": "用户获得",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "用户ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{\"id\":1,\"name\":\"admin\",\"alias\":\"\",\"email\":\"admin@block.vc\",\"password\":\"\",\"roles\":[],\"openid\":\"\",\"active\":true,\"is_admin\":true},\"message\":\"success\"}}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "用户信息修改,只有管理员才可调用，不修改头像",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户"
+                ],
+                "summary": "用户信息修改",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "用户信息ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{\"id\":1,\"name\":\"admin\",\"alias\":\"\",\"email\":\"admin@block.vc\",\"password\":\"\",\"roles\":[],\"openid\":\"\",\"active\":true,\"is_admin\":true},\"message\":\"success\"}}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/usermenu": {
+            "get": {
+                "description": "用户菜单树获得",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "菜单"
+                ],
+                "summary": "用户菜单树获得",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":[{\"id\":1,\"parent_id\":0,\"name\":\"系统设置\",\"route\":\"route-system\",\"component\":\"SystemComponent\",\"icon\":\"system-icon\",\"sequence\":1,\"children\":[{\"id\":2,\"parent_id\":1,\"name\":\"系统用户\",\"route\":\"/system/user\",\"icon\":\"system-user\",\"sequence\":1}]},{\"id\":3,\"parent_id\":0,\"name\":\"分类模块\",\"route\":\"route_modyle\",\"component\":\"Module\",\"icon\":\"module\",\"sequence\":2,\"children\":[{\"id\":4,\"parent_id\":3,\"name\":\"模块列表\",\"route\":\"/auth/category\",\"icon\":\"category\",\"sequence\":1}]},{\"id\":5,\"parent_id\":0,\"name\":\"公司管理\",\"route\":\"route_company\",\"component\":\"Company\",\"icon\":\"company\",\"sequence\":2,\"children\":[{\"id\":6,\"parent_id\":5,\"name\":\"公司分类\",\"route\":\"route_company_1\",\"component\":\"Company\",\"icon\":\"company\",\"sequence\":2,\"children\":[{\"id\":7,\"parent_id\":6,\"name\":\"一级公司\",\"route\":\"route_company_2\",\"component\":\"Company\",\"icon\":\"company\",\"sequence\":2},{\"id\":8,\"parent_id\":6,\"name\":\"二级公司\",\"route\":\"route_company_3\",\"component\":\"Company\",\"icon\":\"company\",\"sequence\":2}]}]}],\"message\":\"success\"}}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/usermenutree/{user_id}": {
+            "get": {
+                "description": "用户菜单树,系统管理员才可用",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "菜单"
+                ],
+                "summary": "用户菜单树",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "用户ID",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":[{\"id\":1,\"parent_id\":0,\"name\":\"系统设置\",\"route\":\"route-system\",\"component\":\"SystemComponent\",\"icon\":\"system-icon\",\"sequence\":1,\"children\":[{\"id\":2,\"parent_id\":1,\"name\":\"系统用户\",\"route\":\"/system/user\",\"icon\":\"system-user\",\"sequence\":1}]},{\"id\":3,\"parent_id\":0,\"name\":\"分类模块\",\"route\":\"route_modyle\",\"component\":\"Module\",\"icon\":\"module\",\"sequence\":2,\"children\":[{\"id\":4,\"parent_id\":3,\"name\":\"模块列表\",\"route\":\"/auth/category\",\"icon\":\"category\",\"sequence\":1}]},{\"id\":5,\"parent_id\":0,\"name\":\"公司管理\",\"route\":\"route_company\",\"component\":\"Company\",\"icon\":\"company\",\"sequence\":2,\"children\":[{\"id\":6,\"parent_id\":5,\"name\":\"公司分类\",\"route\":\"route_company_1\",\"component\":\"Company\",\"icon\":\"company\",\"sequence\":2,\"children\":[{\"id\":7,\"parent_id\":6,\"name\":\"一级公司\",\"route\":\"route_company_2\",\"component\":\"Company\",\"icon\":\"company\",\"sequence\":2},{\"id\":8,\"parent_id\":6,\"name\":\"二级公司\",\"route\":\"route_company_3\",\"component\":\"Company\",\"icon\":\"company\",\"sequence\":2}]}]}],\"message\":\"success\"}}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/users": {
+            "get": {
+                "description": "用户列表，只有管理员才可调用",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户"
+                ],
+                "summary": "用户列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":[{\"id\":1,\"name\":\"admin\",\"alias\":\"\",\"email\":\"admin@block.vc\",\"password\":\"\",\"roles\":null,\"openid\":\"\",\"active\":true,\"is_admin\":true},{\"id\":2,\"name\":\"admin\",\"alias\":\"\",\"email\":\"\",\"password\":\"\",\"roles\":null,\"openid\":\"admin\",\"active\":true,\"is_admin\":false}],\"message\":\"success\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/weixin_upload": {
+            "post": {
+                "description": "微信上传",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "微信"
+                ],
+                "summary": "微信上传",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "上传文件",
+                        "name": "wx_file",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "description": "用户登录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户登录"
+                ],
+                "summary": "用户登录",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户名",
+                        "name": "name",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "密码",
+                        "name": "password",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{\"token\":\"Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjc1MzIxNjI5NTQsIk5hbWUiOiJhZG1pbiIsIlJvbGUiOm51bGwsIlVzZXJJZCI6MSwiSXNBZG1pbiI6dHJ1ZX0.YzPovX4xP6PPlZV9UGPKWgoLfGL8hnnC01j3L-k6f56mJuds7UDL--3Nts_P6RhuOQgzv7BL7hh6CJdSJdopjzE4A4HmEsq80_DN7cazuFE6gzA2ZfVLI7jslnWcJmVHVPTfu8_57NScdfxCDX_nFbbZUWjzDy7iT5L5zLXrBvg\",\"user\":{\"id\":1,\"name\":\"admin\",\"alias\":\"\",\"email\":\"admin@block.vc\",\"password\":\"\",\"roles\":[],\"openid\":\"\",\"active\":true,\"is_admin\":true}},\"message\":\"success\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/login/wechat": {
+            "post": {
+                "description": "用户微信登录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户登录"
+                ],
+                "summary": "用户微信登录",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "微信openid",
+                        "name": "openid",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户名",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户头像",
+                        "name": "head",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{\"token\":\"Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjc1MzIxNjMwODMsIk5hbWUiOiJhZG1pbiIsIlJvbGUiOm51bGwsIlVzZXJJZCI6MiwiSXNBZG1pbiI6ZmFsc2V9.HZq5jBw4-ZQipQPnq0K7Ei0_LvaRXZGNgKqLoFnhV_vpfQupmddsDMZbiI_Yy0Zhd7J7AvRGDXMfVwW9-TidsDrux6-L4KQWIV0Mrlj4SXgW13HvMSXW0XzHYQBxiai61AeJx4VmQR84s2lI5hmKuiVOpsyOZAduJoO1K26b8X4\",\"user\":{\"id\":2,\"name\":\"admin\",\"alias\":\"\",\"email\":\"\",\"password\":\"\",\"roles\":[],\"openid\":\"admin\",\"active\":true,\"is_admin\":false}},\"message\":\"success\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "post": {
+                "description": "用户退出",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户登录"
+                ],
+                "summary": "用户退出",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"message\":\"ok\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

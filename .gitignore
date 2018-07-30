@@ -1,0 +1,10 @@
+# ignore
+log/
+upload_files/
+.idea/
+gin-base-framework
+*.exe
+conf/db_config.yml
+conf/config.yml
+
+.DS_Store
