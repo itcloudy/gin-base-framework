@@ -26,11 +26,11 @@ func RefreshToken(c *gin.Context) {
 	var (
 		user *models.User
 		err  error
+		code int
 	)
-	user, err = services.GetUserById(c.GetInt(common.LOGIN_USER_ID))
+	user, err, code = services.GetUserById(c.GetInt(common.LOGIN_USER_ID))
 
 	if err == nil {
-
 		var roleList []string
 		for _, role := range user.Roles {
 			roleList = append(roleList, fmt.Sprintf("role_%d", role.ID))
@@ -38,6 +38,6 @@ func RefreshToken(c *gin.Context) {
 		token := middles.GenerateJWT(user.Name, roleList, user.ID, user.IsAdmin)
 		common.GenResponse(c, common.SUCCESSED, token, "success")
 	} else {
-		common.GenResponse(c, common.FAILED, nil, " refresh token failed")
+		common.GenResponse(c, code, nil, " refresh token failed")
 	}
 }

@@ -10,6 +10,10 @@ type initModel struct {
 	Role         bool `yaml:"role"`          // init role information
 	Banner       bool `yaml:"banner"`        // init banner information
 	CompanyLevel bool `yaml:"company_level"` // init company level information
+	Category     bool `yaml:"category"`      // init category
+	Api          bool `yaml:"api"`           // init api
+	hexiaoyun128      bool `yaml:"hexiaoyun128"`       // init hexiaoyun128 table information
+	Language     bool `yaml:"language"`      // init language
 }
 
 //serverModel get server information from config.yml
@@ -46,6 +50,7 @@ type adminUserModel struct {
 	Name     string `yaml:"name"`
 	Password string `yaml:"password"`
 	Email    string `yaml:"email"`
+	Mobile   string `yaml:"mobile"`
 }
 
 //weChatModel get admin user information from config.yml
@@ -77,7 +82,7 @@ type qiNiuModel struct {
 type messageQueueModel struct {
 	Enable bool   `yaml:"enable"`
 	Type   string `yaml:"type"`
-	Redis  struct {
+	Redis struct {
 	} `yaml:"redis"`
 	Kafka struct {
 	} `yaml:"kafka"`
@@ -91,16 +96,30 @@ type logModel struct {
 	ConfigFile string `yaml:"config_file"`
 }
 type configModel struct {
-	Server              *serverModel                      `yaml:"server"`
-	Database            *databaseModel                    `yaml:"database"`
-	Redis               *redisModel                       `yaml:"redis"`
-	AdminUser           *adminUserModel                   `yaml:"admin_user"`
-	WeChat              *weChatModel                      `yaml:"we_chat"`
-	FileUpload          *fileUploadModel                  `yaml:"file_upload"`
-	QiNiu               *qiNiuModel                       `yaml:"qi_niu"`
-	SendMessageQueue    *messageQueueModel                `yaml:"send_message_queue"`
-	ReceiveMessageQueue *messageQueueModel                `yaml:"receive_message_queue"`
-	Session             *serverModel                      `yaml:"session"`
-	Log                 *logModel                         `yaml:"log"`
-	Init                *initModel                        `yaml:"init"`
+	Server              *serverModel       `yaml:"server"`
+	Database            *databaseModel     `yaml:"database"`
+	Redis               *redisModel        `yaml:"redis"`
+	AdminUser           *adminUserModel    `yaml:"admin_user"`
+	WeChat              *weChatModel       `yaml:"we_chat"`
+	FileUpload          *fileUploadModel   `yaml:"file_upload"`
+	QiNiu               *qiNiuModel        `yaml:"qi_niu"`
+	SendMessageQueue    *messageQueueModel `yaml:"send_message_queue"`
+	ReceiveMessageQueue *messageQueueModel `yaml:"receive_message_queue"`
+	Session             *serverModel       `yaml:"session"`
+	Log                 *logModel          `yaml:"log"`
+	Init                *initModel         `yaml:"init"`
+	Image               *image             `yaml:"image"`
+	Quartz              *quartz            `yaml:"quartz"`
+	//hexiaoyun128SDK          *hexiaoyun128_sdk_golang.hexiaoyun128Config `yaml:"hexiaoyun128_sdk"`
+}
+
+type image struct {
+	Size int `yaml:"size"`
+}
+
+type quartz struct {
+	UpdateScoreTime       string `yaml:"update_score_time"`
+	UpdateCompanyEditTime string `yaml:"update_company_edit_count_time"`
+	InitVisitCountTime    string `yaml:"init_visit_count_time"`
+	CompanyLevelDownTime  string `yaml:"company_level_down_time"`
 }

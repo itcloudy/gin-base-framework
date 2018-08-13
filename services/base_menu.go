@@ -9,13 +9,15 @@ import (
 )
 
 //MenuCreate menu create
-func MenuCreate(menu *models.Menu) (*models.Menu, error) {
+func MenuCreate(menu *models.Menu) (*models.Menu, error, int) {
 	var (
 		err    error
 		parent *models.Menu
+		code   int
 	)
+	code = common.SUCCESSED
 	if menu.ParentID > 0 {
-		if parent, err = GetMenuById(menu.ParentID); err == nil {
+		if parent, err, _ = GetMenuById(menu.ParentID); err == nil {
 			if parent.Tree != "" {
 				menu.Tree = fmt.Sprintf("%s-%d", parent.Tree, parent.ID)
 			} else {
@@ -23,19 +25,23 @@ func MenuCreate(menu *models.Menu) (*models.Menu, error) {
 			}
 		}
 	}
-	menu, err = menu.Create(common.DB)
-	return menu, err
+	if menu, err = menu.Create(common.DB); err != nil {
+		code = common.DB_INSERT_ERR
+	}
+	return menu, err, code
 
 }
 
 //MenuUpdate menu create
-func MenuUpdate(menu *models.Menu) (*models.Menu, error) {
+func MenuUpdate(menu *models.Menu) (*models.Menu, error, int) {
 	var (
 		err    error
 		parent *models.Menu
+		code   int
 	)
+	code = common.SUCCESSED
 	if menu.ParentID > 0 {
-		if parent, err = GetMenuById(menu.ParentID); err == nil {
+		if parent, err, _ = GetMenuById(menu.ParentID); err == nil {
 			if parent.Tree != "" {
 				menu.Tree = fmt.Sprintf("%s-%d", parent.Tree, parent.ID)
 			} else {
@@ -43,55 +49,71 @@ func MenuUpdate(menu *models.Menu) (*models.Menu, error) {
 			}
 		}
 	}
-	menu, err = menu.Update(common.DB)
+	if menu, err = menu.Update(common.DB); err != nil {
+		code = common.DB_UPDATE_ERR
+	}
 
-	return menu, err
+	return menu, err, code
 
 }
 
 //GetMenuById get menu by id
-func GetMenuById(id int) (*models.Menu, error) {
+func GetMenuById(id int) (*models.Menu, error, int) {
 	var (
 		menu models.Menu
 		err  error
+		code int
 	)
-	err = common.DB.First(&menu, "id = ?", id).Error
-	return &menu, err
+	code = common.SUCCESSED
+	if err = common.DB.First(&menu, "id = ?", id).Error; err != nil {
+		code = common.DB_RECORD_NOT_FOUND
+	}
+	return &menu, err, code
 }
 
-func GetMenuByName(name string) (*models.Menu, error) {
-	var menu models.Menu
-	err := common.DB.First(&menu, "name = ?", name).Error
-	return &menu, err
-}
-
-func GetMenuByRoute(route string) (*models.Menu, error) {
-	var menu models.Menu
-	err := common.DB.First(&menu, "route = ?", route).Error
-	return &menu, err
-}
-
-func GetMenuByUserRoleIds(roleIds []int, isAdmin bool) ([]*models.Menu, error) {
+func GetMenuByName(name string) (*models.Menu, error, int) {
 	var (
-		menus       []*models.Menu
-		roleMenus   []*models.RoleMenu
-		err         error
-		menuIds     []int
-		allMenuIds  []int
-		returnMenus []*models.Menu
+		menu models.Menu
+		err  error
+		code int
+	)
+	code = common.SUCCESSED
+	if err = common.DB.First(&menu, "name = ?", name).Error; err != nil {
+		code = common.DB_RECORD_NOT_FOUND
+	}
+	return &menu, err, code
+}
+
+func GetMenuByUserRoleIds(roleIds []int, isAdmin bool) (returnMenus []*models.Menu, err error, code int) {
+	var (
+		menus      []*models.Menu
+		roleMenus  []*models.RoleMenu
+		menuIds    []int
+		allMenuIds []int
 	)
 	menuMaps := make(map[int]*models.Menu)
+	code = common.SUCCESSED
+
 	db := common.DB
 	if isAdmin {
-		err = db.Find(&menus).Error
+		if err = db.Find(&menus).Error; err != nil {
+			code = common.SYSTEM_HAS_NO_MENUS
+			return
+		}
 	} else {
-		err = db.Where("role_id IN (?)", roleIds).Find(&roleMenus).Error
+		if err = db.Where("role_id IN (?)", roleIds).Find(&roleMenus).Error; err != nil {
+			code = common.ROLE_HAS_NO_MENUS
+			return
+		}
 		if len(roleMenus) > 0 {
 			for _, rm := range roleMenus {
 				menuIds = append(menuIds, rm.MenuID)
 			}
 		}
-		err = db.Where("id IN (?)", menuIds).Find(&menus).Error
+		if err = db.Where("id IN (?)", menuIds).Find(&menus).Error; err != nil {
+			code = common.DB_RECORD_NOT_FOUND
+			return
+		}
 		for _, m := range menus {
 			tree := m.Tree
 			if tree != "" {
@@ -104,7 +126,10 @@ func GetMenuByUserRoleIds(roleIds []int, isAdmin bool) ([]*models.Menu, error) {
 				}
 			}
 		}
-		err = db.Where("id IN (?)", menuIds).Find(&menus).Error
+		if err = db.Where("id IN (?)", menuIds).Find(&menus).Error; err != nil {
+			code = common.ROLE_MENUS_TREE_ERR
+			return
+		}
 	}
 	for _, m := range menus {
 		menuMaps[m.ID] = m
@@ -128,21 +153,60 @@ func GetMenuByUserRoleIds(roleIds []int, isAdmin bool) ([]*models.Menu, error) {
 		}
 	}
 
-	return returnMenus, err
+	return
 }
 
 //GetMenuByUserID get user menu tree by user id
-func GetMenuByUserID(userId int) ([]*models.Menu, error) {
+func GetMenuByUserID(userId int) (menus []*models.Menu, err error, code int) {
 	var (
 		roleIds []int
 		user    models.User
 	)
+
 	db := common.DB
 	user.ID = userId
-	db.First(&user)
+	if err = db.First(&user).Error; err != nil {
+		code = common.SYSTEM_HAS_NO_MENUS
+		return
+
+	}
 	for _, role := range user.Roles {
 		roleIds = append(roleIds, role.ID)
 	}
-	return GetMenuByUserRoleIds(roleIds, user.IsAdmin)
+	menus, err, code = GetMenuByUserRoleIds(roleIds, false)
+	return
+
+}
+
+//DeleteMenupById delete menu by id
+func DeleteMenupById(id int) (*models.Menu, error, int) {
+
+	var (
+		model models.Menu
+		err   error
+		code  int
+	)
+	code = common.SUCCESSED
+	model.ID = id
+	if err = common.DB.Delete(&model).Error; err != nil {
+		code = common.DB_DELETE_ERR
+	}
+	return nil, err, code
+}
+
+//GetMenuByUserID get user menu tree by user id
+func GetMenuByUniqueTag(uniqueTag string) (*models.Menu, error, int) {
+	var (
+		menu models.Menu
+		err  error
+		code int
+	)
+	code = common.SUCCESSED
+	db := common.DB
+	if err = db.Where("unique_tag = ?", uniqueTag).First(&menu).Error; err != nil {
+		code = common.DB_RECORD_NOT_FOUND
+	}
+
+	return &menu, err, code
 
 }

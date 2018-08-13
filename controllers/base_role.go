@@ -24,11 +24,12 @@ func RoleCreate(c *gin.Context) {
 		role   models.Role
 		reRole *models.Role
 		err    error
+		code   int
 	)
 	err = c.ShouldBindWith(&role, binding.JSON)
-	reRole, err = services.RoleCreate(&role)
+	reRole, err, code = services.RoleCreate(&role)
 	if err != nil {
-		common.GenResponse(c, common.FAILED, nil, err.Error())
+		common.GenResponse(c, code, nil, err.Error())
 	} else {
 		common.GenResponse(c, common.SUCCESSED, reRole, "success")
 	}
@@ -49,27 +50,28 @@ func RoleUpdate(c *gin.Context) {
 		role   models.Role
 		reRole *models.Role
 		err    error
+		code   int
 	)
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-
-		common.GenResponse(c, common.FAILED, nil, "param id empty or not a number")
+		code = common.REQUEST_DATA_EMPITY
+		common.GenResponse(c, code, nil, "param id empty or not a number")
 
 		return
 	}
 	err = c.ShouldBindWith(&role, binding.JSON)
 	if err != nil {
-		common.GenResponse(c, common.FAILED, nil, err.Error())
+		common.GenResponse(c, code, nil, err.Error())
 
 		return
 	} else {
 
 		role.ID = id
-		reRole, err = services.RoleUpdate(&role)
+		reRole, err, code = services.RoleUpdate(&role)
 		if err == nil {
 			common.GenResponse(c, common.SUCCESSED, reRole, "success")
 		} else {
-			common.GenResponse(c, common.FAILED, nil, err.Error())
+			common.GenResponse(c, code, nil, err.Error())
 		}
 	}
 }
@@ -89,18 +91,20 @@ func RoleGet(c *gin.Context) {
 	var (
 		role *models.Role
 		err  error
+		code int
 	)
 	id, err := strconv.Atoi(c.Param("id"))
 	if err == nil {
-		role, err = services.GetRoleById(id)
+		role, err, code = services.GetRoleById(id)
 	} else {
+		code = common.REQUEST_DATA_EMPITY
 		err = errors.New("param id empty or not a number")
 	}
 	if err == nil {
 		common.GenResponse(c, common.SUCCESSED, role, "success")
 
 	} else {
-		common.GenResponse(c, common.RECORD_NOT_EXISTED, nil, err.Error())
+		common.GenResponse(c, code, nil, err.Error())
 	}
 }
 
@@ -115,18 +119,19 @@ func RoleGet(c *gin.Context) {
 // @Router /auth/role/{id} [delete]
 func RoleDelete(c *gin.Context) {
 	var (
-		err error
+		err  error
+		code int
 	)
 	id, err := strconv.Atoi(c.Param("id"))
 	if err == nil {
-		_, err = services.DeleteRoleById(id)
+		_, err, code = services.DeleteRoleById(id)
 	} else {
 		err = errors.New("param id empty or not a number")
 	}
 	if err == nil {
 		common.GenResponse(c, common.SUCCESSED, nil, "success")
 	} else {
-		common.GenResponse(c, common.FAILED, nil, err.Error())
+		common.GenResponse(c, code, nil, err.Error())
 	}
 }
 
@@ -148,6 +153,7 @@ func RoleAll(c *gin.Context) {
 		order   string
 		err     error
 		resInfo []*models.Role
+		code    int
 	)
 
 	Where := make(map[string]interface{})
@@ -170,8 +176,8 @@ func RoleAll(c *gin.Context) {
 		Where[k] = v[0]
 	}
 
-	if resInfo, err = services.GetAllRole(Where, page, limit, order); err != nil {
-		common.GenResponse(c, common.FAILED, err.Error(), "error")
+	if resInfo, err, code = services.GetAllRole(Where, page, limit, order); err != nil {
+		common.GenResponse(c, code, err.Error(), "error")
 	} else {
 		common.GenResponse(c, common.SUCCESSED, resInfo, "success")
 	}

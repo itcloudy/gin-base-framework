@@ -24,13 +24,12 @@ func Login(c *gin.Context) {
 		bindUser models.User
 	)
 	err := c.ShouldBindWith(&bindUser, binding.JSON)
-	user, err := services.CheckUser(bindUser.Name, bindUser.Password)
+	user, err, code := services.CheckUser(bindUser.Name, bindUser.Password)
 	if err == nil {
 		var roleList []string
 		for _, role := range user.Roles {
 			roleList = append(roleList, fmt.Sprintf("role_%d", role.ID))
 		}
-
 		token := middles.GenerateJWT(user.Name, roleList, user.ID, user.IsAdmin)
 		var data map[string]interface{}
 		data = make(map[string]interface{})
@@ -39,7 +38,7 @@ func Login(c *gin.Context) {
 		common.GenResponse(c, common.SUCCESSED, data, "success")
 
 	} else {
-		common.GenResponse(c, common.USERNAME_OR_PASSWORD_ERR, nil, err.Error())
+		common.GenResponse(c, code, nil, err.Error())
 	}
 
 }
@@ -57,44 +56,41 @@ func Login(c *gin.Context) {
 func LoginWechat(c *gin.Context) {
 	var (
 		bindUser models.User
+		code     int
+		user     *models.User
+		err      error
 	)
-	err := c.ShouldBindWith(&bindUser, binding.JSON)
+	err = c.ShouldBindWith(&bindUser, binding.JSON)
 	if bindUser.OpenId == "" {
-		common.GenResponse(c, common.FAILED, nil, "openid is empty")
-
+		code = common.OPEN_ID_IS_EMPITY
+		common.GenResponse(c, code, nil, "openid is empty")
 		return
 	}
-	_, err = services.GetOpenId(bindUser.OpenId)
+	_, err, code = services.GetOpenId(bindUser.OpenId)
 	if err != nil {
-		common.GenResponse(c, common.FAILED, nil, "openid is not exist")
+		common.GenResponse(c, code, nil, "openid is not exist")
 		return
 	}
-	user, err := services.GetUserByOpenId(bindUser)
+	name := bindUser.Name
+	head := bindUser.Head
+	user, err, code = services.GetUserByOpenId(&bindUser)
 	if err == nil {
+		_, err, code = services.UpdateUser(bindUser.OpenId, name, head)
+		if err != nil {
+			common.GenResponse(c, code, nil, err.Error())
+			return
+		}
 		var roleList []string
 		for _, role := range user.Roles {
 			roleList = append(roleList, fmt.Sprintf("role_%d", role.ID))
 		}
-
-		token := middles.GenerateJWT(user.Name, roleList, user.ID, user.IsAdmin,)
+		token := middles.GenerateJWT(user.Name, roleList, user.ID, user.IsAdmin)
 		var data map[string]interface{}
 		data = make(map[string]interface{})
 		data["user"] = user
 		data["token"] = token
 		common.GenResponse(c, common.SUCCESSED, data, "success")
 	} else {
-		common.GenResponse(c, common.FAILED, nil, err.Error())
+		common.GenResponse(c, code, nil, err.Error())
 	}
-}
-
-// @tags  用户登录
-// @Description 用户退出
-// @Summary 用户退出
-// @Accept  json
-// @Produce  json
-// @Param Authorization header string true "Token"
-// @Success 200 {string} json "{"code":200,"data":{},"message":"ok"}"
-// @Router /logout [post]
-func Logout(c *gin.Context) {
-
 }

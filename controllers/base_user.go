@@ -4,7 +4,6 @@ import (
 	"github.com/hexiaoyun128/gin-base-framework/common"
 	"github.com/hexiaoyun128/gin-base-framework/models"
 	"github.com/hexiaoyun128/gin-base-framework/services"
-	"github.com/hexiaoyun128/gin-base-framework/storage"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/pkg/errors"
@@ -23,13 +22,14 @@ func SelfInfo(c *gin.Context) {
 	var (
 		user *models.User
 		err  error
+		code int
 	)
 	id := c.GetInt(common.LOGIN_USER_ID)
-	user, err = services.GetUserById(id)
+	user, err, code = services.GetUserById(id)
 	if err == nil {
 		common.GenResponse(c, common.SUCCESSED, user, "success")
 	} else {
-		common.GenResponse(c, common.RECORD_NOT_EXISTED, nil, err.Error())
+		common.GenResponse(c, code, nil, err.Error())
 	}
 
 }
@@ -46,33 +46,25 @@ func SelfInfoUpdate(c *gin.Context) {
 	var (
 		user *models.User
 		err  error
-		path string
+		code int
 	)
 	id := c.GetInt(common.LOGIN_USER_ID)
 	user.ID = id
 
-	if file, header, err := c.Request.FormFile("image"); file != nil && header != nil {
-		if path, err = storage.FileLocalStorage(file, header.Filename); err != nil {
-			common.GenResponse(c, common.UPLOAD_FILE_CREATE_ERR, err, err.Error())
-			return
-		} else {
-			user.Head = path
-		}
-	}
-	if name := c.Request.PostForm.Get("name"); name != "" {
+	if name := c.Query("name"); name != "" {
 		user.Name = name
 	}
-	if name := c.Request.PostForm.Get("email"); name != "" {
-		user.Name = name
+	if email := c.Query("email"); email != "" {
+		user.Email = email
 	}
-	if name := c.Request.PostForm.Get("alias"); name != "" {
-		user.Name = name
+	if alias := c.Query("alias"); alias != "" {
+		user.Alias = alias
 	}
-	user, err = services.UserUpdate(user, c.GetBool(common.LOGIN_IS_ADMIN))
+	user, err, code = services.UserUpdate(user, c.GetBool(common.LOGIN_IS_ADMIN))
 	if err == nil {
 		common.GenResponse(c, common.SUCCESSED, user, "success")
 	} else {
-		common.GenResponse(c, common.RECORD_NOT_EXISTED, nil, err.Error())
+		common.GenResponse(c, code, nil, err.Error())
 	}
 
 }
@@ -91,9 +83,11 @@ func UserGetAll(c *gin.Context) {
 		userList   []*models.User
 		whereArgs  []interface{}
 		whereQuery string
+		code       int
+		total      int
 	)
 	if !c.GetBool(common.LOGIN_IS_ADMIN) {
-		common.GenResponse(c, common.FAILED, nil, "you have no right to do this")
+		common.GenResponse(c, code, nil, "you have no right to do this")
 		return
 	}
 	page := common.String2Int(c.Query("page"), common.DEFAULT_PAGE)
@@ -119,14 +113,15 @@ func UserGetAll(c *gin.Context) {
 			whereQuery += "AND email = ? "
 		}
 	}
-
-	whereArgs = append(whereArgs, "cloudy")
-	whereArgs = append(whereArgs, "cloudy@block.vc")
-	userList, err = services.GetAllUser(whereQuery, whereArgs, "id desc", page, limit)
+	data := make(map[string]interface{})
+	userList, total, err, code = services.GetAllUser(whereQuery, whereArgs, "id desc", page, limit)
 	if err == nil {
+		data["data_list"] = userList
+		data["total"] = total
+
 		common.GenResponse(c, common.SUCCESSED, userList, "success")
 	} else {
-		common.GenResponse(c, common.FAILED, nil, err.Error())
+		common.GenResponse(c, code, nil, err.Error())
 	}
 
 }
@@ -141,11 +136,13 @@ func UserGetAll(c *gin.Context) {
 // @Success 200 {string} json "{"code":200,"data":{"id":1,"name":"admin","alias":"","email":"admin@block.vc","password":"","roles":[],"openid":"","active":true,"is_admin":true},"message":"success"}}"
 // @Router /auth/user/{id} [get]
 func UserGet(c *gin.Context) {
-
 	//TODO department permission control
-
+	var (
+		code int
+	)
 	if !c.GetBool(common.LOGIN_IS_ADMIN) {
-		common.GenResponse(c, common.FAILED, nil, "you have no right to do this")
+		code = common.FORBIDDEN
+		common.GenResponse(c, code, nil, "you have no right to do this")
 		return
 	}
 	var (
@@ -155,14 +152,14 @@ func UserGet(c *gin.Context) {
 	)
 	id, err = strconv.Atoi(c.Param("id"))
 	if err == nil {
-		user, err = services.GetUserById(id)
+		user, err, code = services.GetUserById(id)
 	} else {
 		err = errors.New("param id empty or not a number")
 	}
 	if err == nil {
 		common.GenResponse(c, common.SUCCESSED, user, "success")
 	} else {
-		common.GenResponse(c, common.FAILED, nil, err.Error())
+		common.GenResponse(c, code, nil, err.Error())
 	}
 
 }
@@ -173,42 +170,28 @@ func UserGet(c *gin.Context) {
 // @Accept  multipart/form-data
 // @Produce  json
 // @Success 200 {string} json "{"code":200,"data":{"id":1,"name":"admin","alias":"","email":"admin@block.vc","password":"","roles":[],"openid":"","active":true,"is_admin":true},"message":"success"}}"
-// @Router /auth/user/{id} [put]
+// @Router /auth/user/ [post]
 func UserRegister(c *gin.Context) {
 	var (
 		user   models.User
 		reUser *models.User
 		err    error
-		path   string
+		code   int
 	)
-	if file, header, err := c.Request.FormFile("image"); file != nil && header != nil {
-		if path, err = storage.FileLocalStorage(file, header.Filename); err != nil {
-			common.GenResponse(c, common.UPLOAD_FILE_CREATE_ERR, err, err.Error())
-			return
-		} else {
-			user.Head = path
-		}
-	}
-	if name := c.Request.PostForm.Get("name"); name != "" {
-		user.Name = name
-	}
-	if email := c.Request.PostForm.Get("email"); email != "" {
-		user.Email = email
-	}
-	if alias := c.Request.PostForm.Get("alias"); alias != "" {
-		user.Alias = alias
-	}
-	if password := c.Request.PostForm.Get("password"); password != "" {
-		user.Password = password
+	err = c.ShouldBindWith(&user, binding.JSON)
+	if err != nil {
+		code = common.BINDING_JSON_ERR
+		common.GenResponse(c, code, nil, err.Error())
+		return
 	}
 	//user register can't add any role
 	user.RoleList = []int{}
-	reUser, err = services.UserCreate(&user)
+	reUser, err, code = services.UserCreate(&user)
 	if err == nil {
 		user.Password = ""
 		common.GenResponse(c, common.SUCCESSED, reUser, "success")
 	} else {
-		common.GenResponse(c, common.FAILED, nil, err.Error())
+		common.GenResponse(c, code, nil, err.Error())
 	}
 }
 
@@ -226,30 +209,32 @@ func UserUpdate(c *gin.Context) {
 		user   models.User
 		reUser *models.User
 		err    error
+		code   int
 	)
 
 	id, err := strconv.Atoi(c.Param("id"))
 
 	//only admin or user self can update
 	if !c.GetBool(common.LOGIN_IS_ADMIN) {
-		common.GenResponse(c, common.FAILED, nil, "you have no right to do this")
+		code = common.FORBIDDEN
+		common.GenResponse(c, code, nil, "you have no right to do this")
 		return
 	} else {
 		if c.GetInt(common.LOGIN_USER_ID) != id {
-			common.GenResponse(c, common.FAILED, nil, "you have no right to do this")
+			common.GenResponse(c, code, nil, "you have no right to do this")
 			return
 		}
 	}
 
 	if err = c.ShouldBindWith(&user, binding.JSON); err != nil {
-		common.GenResponse(c, common.FAILED, nil, err.Error())
+		common.GenResponse(c, code, nil, err.Error())
 	}
 	user.ID = id
-	reUser, err = services.UserUpdate(&user, c.GetBool(common.LOGIN_IS_ADMIN))
+	reUser, err, code = services.UserUpdate(&user, c.GetBool(common.LOGIN_IS_ADMIN))
 	if err == nil {
 		user.Password = ""
 		common.GenResponse(c, common.SUCCESSED, reUser, "success")
 	} else {
-		common.GenResponse(c, common.FAILED, nil, err.Error())
+		common.GenResponse(c, code, nil, err.Error())
 	}
 }

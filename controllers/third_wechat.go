@@ -11,6 +11,18 @@ import (
 	"net/http"
 )
 
+type userModel struct {
+	OpenId string `json:"open_id"`
+	Name   string `json:"name"`
+	Head   string `json:"head"`
+}
+
+type openCode struct {
+	SessionKey string `json:"session_key"`
+	ExpiresIn  int    `json:"expires_in"`
+	OpenId     string `json:"openid"`
+}
+
 // @tags 微信
 // @Description 用户用户openid
 // @Summary 用户用户openid
@@ -25,6 +37,7 @@ func GetOpenId(c *gin.Context) {
 	var (
 		model models.WxAppId
 		err   error
+		code  int
 	)
 	jsCode := c.Query("code")
 	appId := common.WeChatInfo.AppID
@@ -34,21 +47,24 @@ func GetOpenId(c *gin.Context) {
 	response, _ := http.Get(requestUrl)
 
 	body, _ := ioutil.ReadAll(response.Body)
-	var returnMap map[string]string
+	returnMap := &openCode{}
 	defer response.Body.Close()
 	if response.StatusCode == 200 {
-		json.Unmarshal(body, &returnMap)
-		model.OpenId = returnMap["openid"]
-		if model.OpenId == "" {
-			common.GenResponse(c, common.FAILED, body, "wechat openid get failed")
+
+		err = json.Unmarshal(body, returnMap)
+		if err != nil {
+			code = common.GET_OPEN_ID_FAILED
+			common.GenResponse(c, code, string(body), "wechat openid get failed")
 			return
 		}
-		r, _ := services.GetOpenId(model.OpenId)
+		model.OpenId = returnMap.OpenId
+
+		r, _, code := services.GetOpenId(model.OpenId)
 		if r.ID == 0 {
-			_, err = services.OpenIdCreate(&model)
+			_, err, code = services.OpenIdCreate(&model)
 		}
 		if err != nil {
-			common.GenResponse(c, common.FAILED, body, err.Error())
+			common.GenResponse(c, code, string(body), err.Error())
 			return
 		} else {
 			common.GenResponse(c, common.SUCCESSED, returnMap, "success")
@@ -56,6 +72,6 @@ func GetOpenId(c *gin.Context) {
 		}
 
 	} else {
-		common.GenResponse(c, common.FAILED, body, "wechat openid get failed")
+		common.GenResponse(c, code, string(body), "wechat openid get failed")
 	}
 }

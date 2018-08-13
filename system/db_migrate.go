@@ -7,11 +7,11 @@ import (
 
 func DBMigrate(db *gorm.DB) {
 	//migrate base model to database table
-	db.AutoMigrate(&models.User{}, &models.Menu{},
-		&models.Role{}, &models.ResourcePage{}, &models.RoleMenu{}, &models.ResourceApi{})
+	db.AutoMigrate(&models.User{}, &models.Menu{}, &models.SystemApi{}, &models.RoleApi{},
+		&models.Role{}, &models.RoleMenu{})
 	//application model to database table
 	db.AutoMigrate(
-
+		&models.WxAppId{},
 	)
 
 }

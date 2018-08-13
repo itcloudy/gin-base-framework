@@ -6,76 +6,142 @@ import (
 	"github.com/hexiaoyun128/gin-base-framework/common"
 	"github.com/hexiaoyun128/gin-base-framework/daemons"
 	"github.com/hexiaoyun128/gin-base-framework/models"
+	"github.com/hexiaoyun128/gin-base-framework/utils"
 	"gopkg.in/go-playground/validator.v9"
 )
 
-func GetUserById(id int) (*models.User, error) {
+func GetUserById(id int) (*models.User, error, int) {
 
 	var (
 		user models.User
 		err  error
+		code int
 	)
+	code = common.SUCCESSED
 
-	err = common.DB.First(&user, "id = ?", id).Related(&user.Roles, "Roles").Error
-	return &user, err
+	if err = common.DB.First(&user, "id = ?", id).Related(&user.Roles, "Roles").Error; err != nil {
+		code = common.DB_RECORD_NOT_FOUND
+	}
+	return &user, err, code
 }
 
-func GetUserByName(name string) (*models.User, error) {
-	var user models.User
-	err := common.DB.First(&user, "name = ?", name).Related(&user.Roles, "Roles").Error
-	return &user, err
-}
-
-func GetUserByNameOrEmail(name string) (*models.User, error) {
-	var user models.User
-	err := common.DB.First(&user, "name = ? OR email = ?", name, name).Related(&user.Roles, "Roles").Error
-	return &user, err
-}
-
-func GetUserByOpenId(user models.User) (*models.User, error) {
+func GetUserByName(name string) (*models.User, error, int) {
 	var (
-		err error
+		user models.User
+		err  error
+		code int
+	)
+	if err = common.DB.First(&user, "name = ?", name).Related(&user.Roles, "Roles").Error; err != nil {
+		code = common.DB_RECORD_NOT_FOUND
+	}
+	return &user, err, code
+}
+
+func GetUserByMobile(mobile string) (*models.User, error, int) {
+	var (
+		user models.User
+		err  error
+		code int
+	)
+	if err = common.DB.First(&user, "mobile = ?", mobile).Related(&user.Roles, "Roles").Error; err != nil {
+		code = common.DB_RECORD_NOT_FOUND
+	}
+
+	return &user, err, code
+}
+
+func GetUserByOpenId(user *models.User) (*models.User, error, int) {
+	var (
+		err  error
+		code int
 	)
 	db := common.DB
-	err = db.First(&user, "open_id = ?", user.OpenId).Related(&user.Roles, "Roles").Error
+	err = db.First(&user, "open_id = ?", user.OpenId).Error
 	if err != nil {
-		return user.Create(common.DB)
+		//return user.Create(common.DB)
+		//创建用户的同时添加权限
+		return UserCreate(user)
 	}
-	return &user, err
+	db.Model(&user).Related(&user.Roles, "Roles")
+	return user, err, code
 }
-func UserCreate(user *models.User) (*models.User, error) {
+func UserCreate(user *models.User) (*models.User, error, int) {
 	var (
 		validate *validator.Validate
 		err      error
+		code     int
 	)
-	validate = validator.New()
-	err = validate.Struct(user)
-	if err != nil {
-		return nil, err
+	code = common.SUCCESSED
+
+	if user.OpenId == "" {
+		validate = validator.New()
+		validate.RegisterValidation("password", utils.ValidatePassword)
+		err = validate.Struct(user)
+		if err != nil {
+			code = common.DATA_VALIDATE_ERR
+			return nil, err, code
+		}
 	}
 
-	user.Pwd = common.Md5(user.Password)
+	tx := common.DB.Begin()
+	defer func() {
+		if err == nil {
+			err = tx.Commit().Error
+		} else {
+			err = tx.Rollback().Error
+		}
 
-	user, err = user.Create(common.DB)
+	}()
 
+	//  判断手机号码是否重复
+	if user.Mobile != "" {
+		if u, err, _ := GetUserByMobile(user.Mobile); err == nil {
+			if u.ID > 0 {
+				code = common.DATA_VALIDATE_ERR
+				return nil, errors.New("mobile repeat"), code
+			}
+		}
+	}
 
-	return user, err
-}
-func CheckUser(name, password string) (*models.User, error) {
-	user, _ := GetUserByNameOrEmail(name)
-	if user.Pwd == common.Md5(password) {
-		return user, nil
+	user, err = user.Create(tx)
+	if user.Password != "" {
+		user.SetPwd(tx)
+	}
+	//添加通用用户权限 所有用户都有ordinary角色
+	var roleSlice []models.Role
+	if ordinary, e, co := GetRoleByCode("ordinary"); e == nil {
+		roleSlice = append(roleSlice, *ordinary)
 	} else {
-		return nil, errors.New("name or password invalid")
+		return nil, e, co
+	}
+
+	tx.Model(user).Association("Roles").Append(roleSlice)
+
+
+
+	return user, err, code
+}
+
+func CheckUser(mobile, password string) (user *models.User, err error, code int) {
+	if user, err, code = GetUserByMobile(mobile); err != nil {
+		return
+	}
+	if user.Pwd == common.SHA256(password) {
+		db := common.DB
+		db.Model(user).Related(&user.Roles, "Roles")
+		return
+	} else {
+		return nil, errors.New("name or password invalid"), common.NAME_PASSWORD_INVALID
 	}
 }
 
 //UserUpdate role create
-func UserUpdate(user *models.User, admin bool) (*models.User, error) {
+func UserUpdate(user *models.User, admin bool) (reModel *models.User, err error, code int) {
 	var (
-		err                error
 		groupPolicyActions []common.GroupPolicyAction
 	)
+	code = common.SUCCESSED
+
 	tx := common.DB.Begin()
 	defer func() {
 		if err == nil {
@@ -88,10 +154,20 @@ func UserUpdate(user *models.User, admin bool) (*models.User, error) {
 		}
 
 	}()
-	user, err = user.Update(tx)
-
-
-
+	//判断手机号码是否重复
+	if user.Mobile != "" {
+		if reModel, err, code = GetUserByMobile(user.Mobile); err == nil {
+			if reModel.ID > 0 && reModel.ID != user.ID {
+				err = errors.New("mobile repeat")
+				code = common.DATA_VALIDATE_ERR
+				return
+			}
+		}
+	}
+	if user, err = user.Update(tx); err != nil {
+		code = common.DB_UPDATE_ERR
+		return
+	}
 
 	if err == nil {
 		if admin {
@@ -114,7 +190,7 @@ func UserUpdate(user *models.User, admin bool) (*models.User, error) {
 					role *models.Role
 				)
 
-				role, err = GetRoleById(roleId)
+				role, err, _ = GetRoleById(roleId)
 				if err != nil {
 					break
 				} else {
@@ -131,21 +207,62 @@ func UserUpdate(user *models.User, admin bool) (*models.User, error) {
 					groupPolicyActions = append(groupPolicyActions, gpa)
 
 				}
+				// 添加通用用户权限
+				if ordinary, e, _ := GetRoleByCode("ordinary"); e == nil {
+					roleSlice = append(roleSlice, *ordinary)
+				}
 				tx.Model(user).Association("Roles").Append(roleSlice)
 			}
 		}
 	}
-	return user, err
+	return
 }
-func GetAllUser(whereQuery string, whereArgs []interface{}, order string, page, limit int) ([]*models.User, error) {
-	var (
-		err      error
-		userList []*models.User
-	)
+func GetAllUser(whereQuery string, whereArgs []interface{}, order string, page, limit int) (userList []*models.User, total int, err error, code int) {
+
 	db := common.DB
 	if whereQuery != "" {
 		db = db.Where(whereQuery, whereArgs...)
 	}
-	err = db.Find(&userList).Offset((page - 1) * limit).Limit(limit).Order(order).Error
-	return userList, err
+	code = common.SUCCESSED
+	if err = db.Where(whereQuery, whereArgs...).Offset((page - 1) * limit).Limit(limit).Order(order).Find(&userList).Error; err == nil {
+		db.Model(models.User{}).Where(whereQuery, whereArgs...).Count(&total)
+	} else {
+		code = common.DB_RECORD_NOT_FOUND
+
+	}
+	return
+}
+
+//通过openid获取用户
+func GetUser(openId string) (*models.User, error, int) {
+	var (
+		model models.User
+		err   error
+		code  int
+	)
+	db := common.DB
+	err = db.First(&model, "open_id = ?", openId).Error
+	if err != nil {
+		code = common.DB_RECORD_NOT_FOUND
+		return nil, err, code
+	}
+	code = common.SUCCESSED
+	return &model, err, code
+}
+
+//根据openid更新用户名与头像
+func UpdateUser(openId, name, head string) (*models.User, error, int) {
+	var (
+		model models.User
+		err   error
+		code  int
+	)
+	db := common.DB
+	err = db.Model(&model).Where("open_id = ?", openId).Updates(models.User{Name: name, Head: head}).Error
+	if err != nil {
+		code = common.DB_UPDATE_ERR
+		return &model, err, code
+	}
+	code = common.SUCCESSED
+	return &model, err, code
 }

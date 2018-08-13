@@ -7,4 +7,5 @@ type WXAppPayInfo struct {
 	OpenId       string `json:"open_id"`       // 用户openID
 	PayStatement string `json:"pay_statement"` // 支付商品
 	Month        int    `json:"month"`         // 购买月数
+	RequestNo    string `json:"request_no"`    // 公司编号
 }

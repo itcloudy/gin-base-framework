@@ -17,6 +17,7 @@ func setTemplate(router *gin.Engine) {
 		router.StaticFS(common.SYSTEM_STATIC_FILE_URL, gin.Dir(common.ServerInfo.SystemStaticFilePath, false))
 
 	}
+
 	return
 }
 
@@ -29,6 +30,7 @@ func InitRouter() *gin.Engine {
 	// set template
 	setTemplate(router)
 	// set middlewares
+	//router.Use(middles.Visit())
 	router.Use(middles.JwtAuthorize())
 	router.Use(gin.Recovery())
 	// add routers

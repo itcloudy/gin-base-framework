@@ -6,27 +6,39 @@ import (
 )
 
 //RoleMenuCreate menu create
-func RoleMenuCreate(rm *models.RoleMenu) (*models.RoleMenu, error) {
+func RoleMenuCreate(rm *models.RoleMenu) (*models.RoleMenu, error, int) {
 	var (
-		err error
+		err  error
+		code int
 	)
-	rm, err = rm.Create(common.DB)
-	return rm, err
+	code = common.SUCCESSED
+
+	if rm, err = rm.Create(common.DB); err != nil {
+		code = common.DB_INSERT_ERR
+	}
+	return rm, err, code
 }
 
 //RoleMenuUpdate menu create
-func RoleMenuUpdate(rm *models.RoleMenu) (*models.RoleMenu, error) {
-	var (
-		err error
-	)
-	rm, err = rm.Update(common.DB)
-	return rm, err
+func RoleMenuUpdate(rm *models.RoleMenu) (reModel *models.RoleMenu, err error, code int) {
+
+	code = common.SUCCESSED
+
+	if rm, err = rm.Update(common.DB); err != nil {
+		code = common.DB_UPDATE_ERR
+	}
+	return
 }
-func GetRoleMenuByID(id int) (*models.RoleMenu, error) {
+func GetRoleMenuByID(id int) (*models.RoleMenu, error, int) {
 	var (
-		rm  models.RoleMenu
-		err error
+		rm   models.RoleMenu
+		err  error
+		code int
 	)
-	err = common.DB.First(&rm, "id = ?", id).Related(&rm.ResourceApi).Related(&rm.Menu).Error
-	return &rm, err
+	code = common.SUCCESSED
+
+	if err = common.DB.First(&rm, "id = ?", id).Related(&rm.Menu).Error; err != nil {
+		code = common.DB_RECORD_NOT_FOUND
+	}
+	return &rm, err, code
 }

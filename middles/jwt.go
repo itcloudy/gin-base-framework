@@ -52,7 +52,7 @@ func InitKeys() {
 }
 
 // GenerateJWT generates a new JWT token
-func GenerateJWT(name string, role []string, userId int, isAdmin bool ) string {
+func GenerateJWT(name string, role []string, userId int, isAdmin bool) string {
 
 	claims := JwtClaims{
 		&jwt.StandardClaims{
@@ -62,7 +62,6 @@ func GenerateJWT(name string, role []string, userId int, isAdmin bool ) string {
 		role,
 		userId,
 		isAdmin,
-
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
 	ss, err := token.SignedString(signKey)
@@ -100,6 +99,8 @@ func JwtAuthorize() gin.HandlerFunc {
 				c.Set(common.LOGIN_USER_ROLES, []string{})
 				c.Set(common.LOGIN_IS_ADMIN, false)
 				c.Set(common.TOKEN_VALID, false)
+				c.Set(common.LOGIN_COMPANY_ID, 0)
+				c.Set(common.LOGIN_COMPANY_REQUEST_NO, "")
 				log.Warn("token invalid")
 			}
 		}

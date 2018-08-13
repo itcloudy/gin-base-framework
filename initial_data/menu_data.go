@@ -6,17 +6,13 @@ import (
 	"io/ioutil"
 
 	"fmt"
+	"github.com/hexiaoyun128/gin-base-framework/common"
 	"github.com/hexiaoyun128/gin-base-framework/models"
 	"github.com/hexiaoyun128/gin-base-framework/services"
 	"os"
 	"path"
 )
 
-type apiInfo struct {
-	Name    string `json:"name" yaml:"name"`       // api name
-	Address string `json:"address" yaml:"address"` // api address
-	Method  string `json:"method" yaml:"method"`   // api method
-}
 type menuParam struct {
 	Name      string       `yaml:"name" json:"name"`           // menu name
 	Route     string       `yaml:"route" json:"route"`         // menu route
@@ -24,7 +20,6 @@ type menuParam struct {
 	Icon      string       `yaml:"icon" json:"icon"`           // web icon
 	ParentID  int          `json:"parent_id"`                  // menu parent
 	Children  []*menuParam `yaml:"children" json:"children"`   // child menus
-	ApiList   []*apiInfo   `yaml:"api_list" json:"api_list"`   // api list
 	Sequence  int          `yaml:"sequence"`                   // display order
 	UniqueTag string       `yaml:"unique_tag"`                 // 菜单唯一标识
 
@@ -36,19 +31,16 @@ type systemMenus struct {
 //InitMenu
 func InitMenu() {
 	var ids []int
-	n, _ := services.GetMenuByUserRoleIds(ids, true)
+	n, _, _ := services.GetMenuByUserRoleIds(ids, true)
 	if len(n) > 0 {
 		return
 	}
 	var systemMs *systemMenus
-	wr, _ := os.Getwd()
-	filePath := path.Join(wr, "conf", "menu_data.yml")
+	filePath := path.Join(common.WorkSpace, "menu_data.yml")
 	menuData, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		log.Errorf("menu init file read failed: %s", err)
-
 		fmt.Printf("menu init file read failed: %s", err)
-
 		log.Flush()
 		os.Exit(-1)
 	}
@@ -78,27 +70,13 @@ func insertMenus(men *menuParam) {
 	sysMenu.ParentID = men.ParentID
 	sysMenu.Sequence = men.Sequence
 	sysMenu.UniqueTag = men.UniqueTag
-	m, err = services.MenuCreate(&sysMenu)
+	m, err, _ = services.MenuCreate(&sysMenu)
 	if err != nil {
 		log.Errorf("menu create failed : %s,%v", err, m)
 		log.Flush()
 		os.Exit(-1)
 	}
 
-	// api info
-	for _, api := range men.ApiList {
-		var apiInfo models.ResourceApi
-		apiInfo.Name = api.Name
-		apiInfo.Address = api.Address
-		apiInfo.Method = api.Method
-		apiInfo.MenuID = m.ID
-
-		if _, err := services.ResourceApiCreate(&apiInfo); err != nil {
-			log.Errorf("resource api create failed : %s", err)
-			log.Flush()
-			os.Exit(-1)
-		}
-	}
 	for _, me := range men.Children {
 		me.ParentID = m.ID
 		insertMenus(me)

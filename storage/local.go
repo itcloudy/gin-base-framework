@@ -67,6 +67,6 @@ func FileLocalStorage(file multipart.File, filename string, params ...interface{
 		return "", err
 
 	}
-
+	localFileName = common.StringsJoin(common.UPLOAD_FILE_URL, localFileName)
 	return
 }

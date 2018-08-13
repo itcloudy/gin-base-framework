@@ -3,96 +3,65 @@ package services
 import (
 	"fmt"
 	"github.com/hexiaoyun128/gin-base-framework/common"
-	"github.com/hexiaoyun128/gin-base-framework/daemons"
 	"github.com/hexiaoyun128/gin-base-framework/models"
 	"gopkg.in/go-playground/validator.v9"
 )
 
 //RoleCreate role create
-func RoleCreate(role *models.Role) (*models.Role, error) {
+func RoleCreate(role *models.Role) (*models.Role, error, int) {
 
 	var (
-		validate           *validator.Validate
-		err                error
-		txErr              error
-		policyActions      []common.PolicyAction
-		groupPolicyActions []common.GroupPolicyAction
+		validate *validator.Validate
+		err      error
+		code     int
 	)
+	code = common.SUCCESSED
 	validate = validator.New()
 	err = validate.Struct(role)
 	if err != nil {
-		return nil, err
+		code = common.DATA_VALIDATE_ERR
+		return nil, err, code
 	}
 
 	tx := common.DB.Begin()
 	defer func() {
 		if err == nil {
-			txErr = tx.Commit().Error
+			tx.Commit()
 		} else {
-			txErr = tx.Rollback().Error
+			tx.Rollback()
 		}
-		if txErr == nil && err == nil {
-			pType := fmt.Sprintf("role_%s", role.ID)
-			daemons.RoleMenusEnforcerDaemon(pType, policyActions, role.ID)
-			daemons.UserOrRoleEnforcerDaemon(groupPolicyActions)
-		}
-		if err != nil {
-			err = txErr
-		}
-
 	}()
-	role, err = role.Create(tx)
-
-	if err == nil {
-		for _, ma := range role.MenuApis {
-			for _, apiId := range ma.ApiIds {
-
-				var rm models.RoleMenu
-				rm.MenuID = ma.MenuID
-				rm.RoleID = role.ID
-				rm.RoleID = role.ID
-				rm.ResourceApiID = apiId
-				rm.Create(tx)
-			}
-		}
-		for _, ro := range role.Inherits {
-			var gpa common.GroupPolicyAction
-			gpa.Action = "add"
-			gpa.Role = fmt.Sprintf("role_%d", role.ID)
-			gpa.UserOrRole = fmt.Sprintf("role_%d", ro.ID)
-			groupPolicyActions = append(groupPolicyActions, gpa)
-
-		}
+	if role, err = role.Create(tx); err != nil {
+		code = common.DB_INSERT_ERR
 	}
 
-	return role, err
+	return role, err, code
 
 }
 
 //RoleUpdate menu create
-func RoleUpdate(role *models.Role) (*models.Role, error) {
+func RoleUpdate(role *models.Role) (*models.Role, error, int) {
 	var (
 		err                error
-		txErr              error
 		oldRmMenus         []models.RoleMenu
 		policyActions      []common.PolicyAction
 		groupPolicyActions []common.GroupPolicyAction
+		code               int
 	)
+	code = common.SUCCESSED
 
+	validate := validator.New()
+	err = validate.Struct(role)
+	if err != nil {
+		code = common.DATA_VALIDATE_ERR
+		return nil, err, code
+	}
 	tx := common.DB.Begin()
 	defer func() {
 		if err == nil {
-			txErr = tx.Commit().Error
+			tx.Commit()
 		} else {
-			txErr = tx.Rollback().Error
-		}
-		if txErr == nil && err == nil {
-			pType := fmt.Sprintf("role_%s", role.ID)
-			daemons.RoleMenusEnforcerDaemon(pType, policyActions, role.ID)
-			daemons.UserOrRoleEnforcerDaemon(groupPolicyActions)
-		}
-		if err != nil {
-			err = txErr
+			tx.Rollback()
 		}
 
 	}()
@@ -100,7 +69,10 @@ func RoleUpdate(role *models.Role) (*models.Role, error) {
 	if role.ID == 1 {
 		role.Name = ""
 	}
-	role, err = role.Update(tx)
+	if role, err = role.Update(tx); err != nil {
+		code = common.DB_UPDATE_ERR
+		return nil, err, code
+	}
 	if err == nil {
 		//delete all role menus
 		tx.Where("role_id = ?", role.ID).Find(&oldRmMenus)
@@ -113,28 +85,15 @@ func RoleUpdate(role *models.Role) (*models.Role, error) {
 			groupPolicyActions = append(groupPolicyActions, gpa)
 		}
 		for _, rm := range oldRmMenus {
-			if r, e := GetRoleMenuByID(rm.ID); e == nil {
+			if _, e, _ := GetRoleMenuByID(rm.ID); e == nil {
 				var pA common.PolicyAction
-				pA.Method = r.ResourceApi.Method
-				pA.Address = r.ResourceApi.Address
 				pA.PType = fmt.Sprintf("role_%d", role.ID)
 				policyActions = append(policyActions, pA)
 			}
 
 		}
 		tx.Where("role_id = ?", role.ID).Delete(models.RoleMenu{})
-		// create role menus
-		for _, ma := range role.MenuApis {
-			for _, apiId := range ma.ApiIds {
 
-				var rm models.RoleMenu
-				rm.MenuID = ma.MenuID
-				rm.RoleID = role.ID
-				rm.RoleID = role.ID
-				rm.ResourceApiID = apiId
-				rm.Create(tx)
-			}
-		}
 		for _, ro := range role.Inherits {
 			var gpa common.GroupPolicyAction
 			gpa.Action = "add"
@@ -145,24 +104,24 @@ func RoleUpdate(role *models.Role) (*models.Role, error) {
 		}
 	}
 
-	return role, err
+	return role, err, code
 
 }
 
 //GetRoleById get menu by id
-func GetRoleById(id int) (*models.Role, error) {
+func GetRoleById(id int) (*models.Role, error, int) {
 
 	var (
 		role models.Role
 		err  error
+		code int
 	)
+	code = common.SUCCESSED
 	db := common.DB
-	err = db.First(&role, "id = ?", id).Related(&role.RoleMenus, "RoleMenus").Error
-
+	if err = db.First(&role, "id = ?", id).Related(&role.RoleMenus, "RoleMenus").Error; err != nil {
+		code = common.DB_RECORD_NOT_FOUND
+	}
 	for _, m := range role.RoleMenus {
-		if m.ResourceApiID > 0 {
-			db.First(&m.ResourceApi)
-		}
 		if m.MenuID > 0 {
 			db.First(&m.Menu)
 		}
@@ -171,34 +130,82 @@ func GetRoleById(id int) (*models.Role, error) {
 		}
 	}
 
-	return &role, err
+	return &role, err, code
 }
 
-func GetRoleByName(name string) (*models.Role, error) {
-	var role models.Role
-	err := common.DB.First(&role, "name = ?", name).Related(&role.RoleMenus, "RoleMenus").Error
-	return &role, err
+//GetRoleByCode get menu by code
+func GetRoleByCode(uniqueCode string) (*models.Role, error, int) {
+
+	var (
+		role models.Role
+		err  error
+		code int
+	)
+	db := common.DB
+	if err = db.First(&role, "code = ?", uniqueCode).Related(&role.RoleMenus, "RoleMenus").Error; err != nil {
+		code = common.DB_RECORD_NOT_FOUND
+	}
+
+	for _, m := range role.RoleMenus {
+
+		if m.MenuID > 0 {
+			db.First(&m.Menu)
+		}
+		if m.RoleID > 0 {
+			db.First(&m.Role)
+		}
+	}
+
+	return &role, err, code
 }
 
-//DeleteRoleById get category by id
-func DeleteRoleById(id int) (*models.Role, error) {
+func GetRoleByName(name string) (*models.Role, error, int) {
+	var (
+		role models.Role
+		err  error
+		code int
+	)
+	code = common.SUCCESSED
+	if err = common.DB.First(&role, "name = ?", name).Related(&role.RoleMenus, "RoleMenus").Error; err != nil {
+		code = common.DB_RECORD_NOT_FOUND
+	}
+	return &role, err, code
+}
+
+//DeleteRoleById get role by id
+func DeleteRoleById(id int) (*models.Role, error, int) {
 
 	var (
 		model models.Role
 		err   error
+		code  int
 	)
 	model.ID = id
-	err = common.DB.Delete(&model).Error
-	return nil, err
+	if err = common.DB.Delete(&model).Error; err != nil {
+		code = common.DB_DELETE_ERR
+	}
+	return nil, err, code
 }
 
 //GetAllRole get all banner_group
-func GetAllRole(where map[string]interface{}, page int, limit int, order string) ([]*models.Role, error) {
+func GetAllRole(where map[string]interface{}, page int, limit int, order string) ([]*models.Role, error, int) {
 	var (
 		err      error
 		roleList []*models.Role
+		code     int
 	)
 	db := common.DB
-	err = db.Where(where).Offset((page - 1) * limit).Limit(limit).Find(&roleList).Order(order).Error
-	return roleList, err
+	if err = db.Where(where).Offset((page - 1) * limit).Limit(limit).Find(&roleList).Order(order).Error; err != nil {
+		code = common.DB_RECORD_NOT_FOUND
+	}
+	return roleList, err, code
+}
+
+//GetAllRoleFromDB get all
+func GetAllRoleFromDB() []*models.Role {
+	var (
+		roles []*models.Role
+	)
+	common.DB.Find(&roles)
+	return roles
 }

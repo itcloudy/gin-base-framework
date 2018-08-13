@@ -7,28 +7,32 @@ import (
 )
 
 //GetOpenId  by id
-func GetOpenId(openId string) (*models.WxAppId, error) {
-
+func GetOpenId(openId string) (*models.WxAppId, error, int) {
 	var (
 		model models.WxAppId
+		code  int
 		err   error
 	)
+	code = common.SUCCESSED
 	db := common.DB
-	err = db.First(&model, "open_id = ?", openId).Error
-	return &model, err
+	err = db.Where("open_id = ?", openId).First(&model).Error
+	if err != nil {
+		code = common.DB_RECORD_NOT_FOUND
+	}
+	return &model, err, code
 }
 
 //OpenIdCreate   create  WxAppId
-func OpenIdCreate(model *models.WxAppId) (*models.WxAppId, error) {
+func OpenIdCreate(model *models.WxAppId) (reModel *models.WxAppId, err error, code int) {
 
 	var (
 		validate *validator.Validate
-		err      error
 	)
 	validate = validator.New()
 	err = validate.Struct(model)
 	if err != nil {
-		return nil, err
+		code = common.DATA_VALIDATE_ERR
+		return
 	}
 
 	tx := common.DB.Begin()
@@ -40,7 +44,11 @@ func OpenIdCreate(model *models.WxAppId) (*models.WxAppId, error) {
 		}
 
 	}()
-	model, err = model.Create(tx)
-
-	return model, err
+	reModel, err = model.Create(tx)
+	if err != nil {
+		code = common.DB_INSERT_ERR
+		return
+	}
+	code = common.SUCCESSED
+	return
 }

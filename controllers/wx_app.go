@@ -33,9 +33,24 @@ import (
 // @Router /auth/weixin_upload [post]
 func WeiXinUpload(c *gin.Context) {
 	var (
-		filePath string
+		filePath  string
+		sufixList []string
+		sufix     string
 	)
 	if file, header, err := c.Request.FormFile("wx_file"); file != nil && header != nil {
+		// 过滤mime类型
+		sufixList = strings.Split(header.Filename, ".")
+		sufix = sufixList[(len(sufixList) - 1)]
+		if strings.Index(common.UPLOAD_FILE_MIME, sufix) == -1 {
+			common.GenResponse(c, common.UPLOAD_FILE_CREATE_ERR, nil, "只允许上传 "+common.UPLOAD_FILE_MIME+"的图片")
+			return
+		}
+		// 限制图片大小
+		size := 1024 * 1024 * common.Image.Size
+		if header.Size > int64(size) {
+			common.GenResponse(c, common.UPLOAD_FILE_CREATE_ERR, nil, "图片太大！")
+			return
+		}
 		if filePath, err = storage.FileLocalStorage(file, header.Filename); err != nil {
 			common.GenResponse(c, common.UPLOAD_FILE_CREATE_ERR, err, err.Error())
 			return
@@ -44,7 +59,6 @@ func WeiXinUpload(c *gin.Context) {
 		common.GenResponse(c, common.UPLOAD_FILE_RESROUCE_ERR, err, err.Error())
 		return
 	}
-	filePath = common.StringsJoin(common.UPLOAD_FILE_URL, filePath)
 	common.GenResponse(c, common.SUCCESSED, filePath, "success")
 }
 
@@ -54,10 +68,11 @@ func WeiXinUpload(c *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param Authorization header string true "Token"
-// @Param total_fee query int true "费用（分），1元=100分，"
+// @Param total_fee query int true "费用（分"
 // @Param fee_type query string true "币种"
 // @Param level query int true "公司等级"
 // @Param month query int true "购买月数"
+// @Param request_no query string true "公司编号"
 // @Param open_id query string  true "微信openid"
 // @Param pay_statement  query string true "商品名称"
 // @Success 200 {string} json ""
@@ -73,6 +88,7 @@ func WxAppPay(c *gin.Context) {
 		common.GenResponse(c, common.PAY_PARAMS_ERR, err, "failed")
 		return
 	}
+
 
 	// 商户支付信息
 	weChatInfo := common.WeChatInfo
@@ -108,7 +124,7 @@ func WxAppPay(c *gin.Context) {
 	client := &http.Client{}
 	req, err := http.NewRequest("POST", weChatInfo.PayUrl, strings.NewReader(reqStr))
 	if err != nil {
-		common.GenResponse(c, common.PAY_REQUEST_ERR, err, "failed")
+		common.GenResponse(c, common.PAY_REQUEST_POST_ERR, err, "failed")
 		return
 	}
 	req.Header.Set("Content-Type", "text/xml;charset=utf-8")
@@ -137,12 +153,9 @@ func WxAppPay(c *gin.Context) {
 		resMap["timeStamp"] = strconv.FormatInt(time.Now().Unix(), 10)       //当前时间戳
 
 		resMap["paySign"] = WxPayCalcSign(resMap, weChatInfo.PaySignKey)
-		                       // 支付IP地址
-
-
-		// 返回5个支付参数及sign 用户进行确认支付
+		// 写入数据库
 	} else {
-		common.GenResponse(c, common.PAY_RESULT_ERR, resp1, "failed")
+		common.GenResponse(c, common.PAY_RESPONSE_ERR, resp1, "failed")
 
 	}
 }
@@ -206,16 +219,19 @@ func WxAppPayAsyncBack(c *gin.Context) {
 	var (
 		err    error
 		result payResult
+		code   int
 	)
 
 	err = c.ShouldBindWith(&result, binding.JSON)
 	if err != nil {
-		common.GenResponse(c, common.FAILED, err, err.Error())
+		code = common.BINDING_JSON_ERR
+		common.GenResponse(c, code, err, err.Error())
 		return
 	}
+	//err, code = services.PayResult(result.RecordId, result.Status, c.GetInt(common.LOGIN_USER_ID))
 	if err == nil {
 		common.GenResponse(c, common.SUCCESSED, result, "success")
 	} else {
-		common.GenResponse(c, common.FAILED, nil, err.Error())
+		common.GenResponse(c, code, nil, err.Error())
 	}
 }

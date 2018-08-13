@@ -219,6 +219,12 @@
 			"revisionTime": "2018-05-03T02:20:59Z"
 		},
 		{
+			"checksumSHA1": "V6gJx3kala+tjfo/ynTjg1u5OxI=",
+			"path": "github.com/gin-contrib/cors",
+			"revision": "6f0a820f94bea07359ec77c26855ca8cf6762739",
+			"revisionTime": "2018-05-14T15:18:08Z"
+		},
+		{
 			"checksumSHA1": "icSNu0bzu8AsRDHr4iWT+6kWnI4=",
 			"path": "github.com/gin-contrib/sessions",
 			"revision": "15760a03818fe16125cd735433b57a7398335b13",

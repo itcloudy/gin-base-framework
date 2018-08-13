@@ -3,19 +3,19 @@ package common
 import (
 	"bytes"
 	"crypto/md5"
+	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"gopkg.in/go-playground/validator.v9"
 	"net/http"
 	"strconv"
 	"strings"
 )
 
 type ResponseJson struct {
-	Code    uint        `yaml:"code" json:"code"`   //response code
-	Data    interface{} `yaml:"data" json:"data"`   //response data
-	Message string      `yaml:"message" json:"msg"` //response message
+	Code    uint        `yaml:"code" json:"code"`       // response code
+	Data    interface{} `yaml:"data" json:"data"`       // response data
+	Message string      `yaml:"message" json:"message"` // response message
 }
 
 type PolicyAction struct {
@@ -33,6 +33,9 @@ type GroupPolicyAction struct {
 
 //GenResponse genrate reponse ,json format
 func GenResponse(c *gin.Context, code int, data interface{}, message string) {
+	if ServerInfo.Mode == "release" {
+		message = GetResponseMessage(code)
+	}
 	c.JSON(http.StatusOK, gin.H{
 		"code":    code,
 		"data":    data,
@@ -55,7 +58,7 @@ func StringsJoin(strs ...string) string {
 	return str
 
 }
-func Join2String(split string, strs ...interface{}) string {
+func goin2String(split string, strs ...interface{}) string {
 	var str string
 	var b bytes.Buffer
 	strsLen := len(strs)
@@ -78,6 +81,12 @@ func Join2String(split string, strs ...interface{}) string {
 	return str
 
 }
+func SHA256(str string) (result string) {
+	h := sha256.New()
+	h.Write([]byte(str))
+	result = fmt.Sprintf("%x", h.Sum(nil))
+	return
+}
 func Md5(source string) string {
 	md5h := md5.New()
 	md5h.Write([]byte(source))
@@ -93,31 +102,24 @@ func String2Int(str string, defVal int) int {
 	}
 }
 
-func Validate(model interface{}) error {
-	var (
-		validate *validator.Validate
-		err      error
-	)
-	validate = validator.New()
-	err = validate.Struct(model)
-	return err
-}
-
 func GetVisitorInfo(c *gin.Context) map[string]interface{} {
 	var (
-		remoteAddr  []string
 		visitorInfo map[string]interface{}
 	)
 	visitorInfo = make(map[string]interface{})
-	remoteAddr = strings.Split(c.Request.RemoteAddr, ":")
-	if len(remoteAddr) == 2 {
-		visitorInfo["ip"] = remoteAddr[0]
-	}
 	visitorInfo["header"] = c.Request.Header
 	visitorInfo["url"] = c.Request.URL
-	visitorInfo["content-length"] = c.Request.ContentLength
 	visitorInfo["host"] = c.Request.Host
 	visitorInfo["uri"] = c.Request.RequestURI
-
+	visitorInfo["ip"] = strings.Split(visitorInfo["host"].(string), ":")[0]
+	if visitorInfo["ip"] == "localhost" {
+		visitorInfo["ip"] = "127.0.0.1"
+	}
 	return visitorInfo
+}
+
+func TimZero(t string) string {
+	timeArr := strings.Split(t, "T")
+	timeString := timeArr[0] + "T00:00:00Z"
+	return timeString
 }

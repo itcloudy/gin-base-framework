@@ -3,24 +3,1527 @@ info:
   description: Dongjing server
   license: {}
   termsOfService: https://github.com/hexiaoyun128
-  title: gin-base-framework Server api
+  title: Dongjing Server api
   version: "2.0"
 paths:
-  /auth/banner_group:
-    post:
+  /auth/approve:
+    get:
       consumes:
       - application/json
-      description: 用户用户openid
+      description: 审批意见创建
       parameters:
       - description: Token
         in: header
         name: Authorization
         required: true
         type: string
-      - description: 微信Code
-        in: query
-        name: code
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":[{"id":1,"user_id":1,"approve_content":"通过"},{"id":2,"user_id":1,"approve_content":"通过"}],"message":"success"}'
+          schema:
+            type: string
+      summary: 审批意见创建
+      tags:
+      - 审批意见
+    post:
+      consumes:
+      - application/json
+      description: 审批意见创建
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
         required: true
+        type: string
+      - description: 审批意见
+        in: query
+        name: approve_content
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{"id":1,"user_id":1,"approve_content":"通过"},"message":"success"}'
+          schema:
+            type: string
+      summary: 审批意见创建
+      tags:
+      - 审批意见
+  /auth/banner_group:
+    post:
+      consumes:
+      - application/json
+      description: 轮播图组创建
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 开始时间
+        in: query
+        name: start_date
+        required: true
+        type: time
+      - description: 结束时间
+        in: query
+        name: end_date
+        required: true
+        type: time
+      - description: 轮播组名称
+        in: query
+        name: name
+        required: true
+        type: string
+      - description: 轮播时间间隔(s)
+        in: query
+        name: display_time
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{"id":1,"active":true,"start_date":"2018-06-28T23:04:05+08:00","end_date":"2018-07-28T23:04:05+08:00","name":"六一","display_time":3},"message":"success"}'
+          schema:
+            type: string
+      summary: 轮播图组创建
+      tags:
+      - 轮播图组
+  /auth/banner_group/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 轮播图组删除
+      parameters:
+      - description: 轮播图组ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":null,"message":"success"}'
+          schema:
+            type: string
+      summary: 轮播图组删除
+      tags:
+      - 轮播图组
+    put:
+      consumes:
+      - application/json
+      description: 轮播图组修改
+      parameters:
+      - description: 轮播图组ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 是否有效
+        in: query
+        name: active
+        required: true
+        type: boolean
+      - description: 开始时间
+        in: query
+        name: start_date
+        required: true
+        type: time
+      - description: 结束时间
+        in: query
+        name: end_date
+        required: true
+        type: time
+      - description: 轮播组名称
+        in: query
+        name: name
+        required: true
+        type: string
+      - description: 轮播时间间隔(s)
+        in: query
+        name: display_time
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{"id":1,"active":true,"start_date":"2018-06-28T23:04:05+08:00","end_date":"2018-07-28T23:04:05+08:00","name":"六一","display_time":3},"message":"success"}'
+          schema:
+            type: string
+      summary: 轮播图组修改
+      tags:
+      - 轮播图组
+  /auth/banner_groups:
+    get:
+      consumes:
+      - application/json
+      description: 轮播图组列表
+      parameters:
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量
+        in: query
+        name: limit
+        type: integer
+      - description: 排序
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":[{"id":1,"active":true,"start_date":"2018-06-28T23:04:05+08:00","end_date":"2018-07-28T23:04:05+08:00","name":"六一","display_time":3},{"id":3,"active":false,"start_date":"2018-06-28T23:04:05+08:00","end_date":"2018-07-28T23:04:05+08:00","name":"六一1111","display_time":3}],"message":"success"}'
+          schema:
+            type: string
+      summary: 轮播图组列表
+      tags:
+      - 轮播图组
+  /auth/banner_image:
+    delete:
+      consumes:
+      - application/json
+      description: 轮播图删除
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 轮播图ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":null,"message":"success"}'
+          schema:
+            type: string
+      summary: 轮播图删除
+      tags:
+      - 轮播图
+    post:
+      consumes:
+      - multipart/form-data
+      description: 轮播图创建
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 图片描述
+        in: query
+        name: description
+        type: string
+      - description: 轮播组ID
+        in: query
+        name: group_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{"id":1,"description":"2e31231","sequence":1,"image":"/upload_files/2bf92d23837ff63b44004f3362d4956d.png","group_id":0,"group":null,"url":"www.baidu.com"},"message":"success"}'
+          schema:
+            type: string
+      summary: 轮播图创建
+      tags:
+      - 轮播图
+  /auth/banner_image/{id}:
+    put:
+      consumes:
+      - multipart/form-data
+      description: 轮播图修改
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 轮播图ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 图片描述
+        in: query
+        name: description
+        type: string
+      - description: 图片
+        in: query
+        name: image
+        type: file
+      - description: 轮播组ID
+        in: query
+        name: group_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{"id":1,"description":"2e31231","sequence":1,"image":"/upload_files/2bf92d23837ff63b44004f3362d4956d.png","group_id":0,"group":null,"url":"www.baidu.com"},"message":"success"}'
+          schema:
+            type: string
+      summary: 轮播图修改
+      tags:
+      - 轮播图
+  /auth/categories:
+    get:
+      consumes:
+      - application/json
+      description: 分类列表
+      parameters:
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量
+        in: query
+        name: limit
+        type: integer
+      - description: 排序
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"message":"ok"}'
+          schema:
+            type: string
+      summary: 分类列表
+      tags:
+      - 分类
+  /auth/category:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 分类创建,只有管理员才可操作
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 名称
+        in: query
+        name: name
+        required: true
+        type: time
+      - description: 图片
+        in: query
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"message":"ok"}'
+          schema:
+            type: string
+      summary: 分类创建
+      tags:
+      - 分类
+  /auth/category/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 分类删除 只有管理员才可操作
+      parameters:
+      - description: 分类ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"message":"ok"}'
+          schema:
+            type: string
+      summary: 分类删除
+      tags:
+      - 分类
+    get:
+      consumes:
+      - application/json
+      description: 分类获得
+      parameters:
+      - description: 分类ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"message":"ok"}'
+          schema:
+            type: string
+      summary: 分类获得
+      tags:
+      - 分类
+    put:
+      consumes:
+      - multipart/form-data
+      description: 分类修改 只有管理员才可操作
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 名称
+        in: query
+        name: name
+        required: true
+        type: time
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"message":"ok"}'
+          schema:
+            type: string
+      summary: 分类修改
+      tags:
+      - 分类
+  /auth/category/{id}/{action}:
+    put:
+      consumes:
+      - application/json
+      description: 分类顺序修改
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 分类ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 动作
+        in: path
+        name: action
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"message":"ok"}'
+          schema:
+            type: string
+      summary: 分类顺序修改
+      tags:
+      - 分类
+  /auth/category_extend:
+    post:
+      consumes:
+      - application/json
+      description: 分类拓展创建 只有管理员才可操作
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 分类ID
+        in: query
+        name: category_id
+        required: true
+        type: integer
+      - description: 拓展字段名称
+        in: query
+        name: name
+        required: true
+        type: string
+      - description: 扩展字段HTML显示类型
+        in: query
+        name: html_type
+        required: true
+        type: string
+      - description: 扩展字段值
+        in: query
+        name: values
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"message":"ok"}'
+          schema:
+            type: string
+      summary: 分类拓展创建
+      tags:
+      - 分类拓展
+  /auth/category_extend/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 分类拓展删除 只有管理员才可操作
+      parameters:
+      - description: 分类拓展ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"message":"ok"}'
+          schema:
+            type: string
+      summary: 分类拓展删除
+      tags:
+      - 分类拓展
+    put:
+      consumes:
+      - application/json
+      description: 分类拓展修改 只有管理员才可操作
+      parameters:
+      - description: 分类拓展ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 分类ID
+        in: path
+        name: category_id
+        required: true
+        type: integer
+      - description: 拓展字段名称
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: 扩展字段HTML显示类型
+        in: path
+        name: html_type
+        required: true
+        type: string
+      - description: 扩展字段值
+        in: path
+        name: values
+        type: string
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"message":"ok"}'
+          schema:
+            type: string
+      summary: 分类拓展修改
+      tags:
+      - 分类拓展
+  /auth/chain:
+    get:
+      consumes:
+      - application/json
+      description: 历史记录查询
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 表名
+        in: query
+        name: table
+        required: true
+        type: string
+      - description: '本地记录id '
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":[{},{}],"message":"success"}'
+          schema:
+            type: string
+      summary: 历史记录查询
+      tags:
+      - 上链
+  /auth/change_pass:
+    put:
+      consumes:
+      - application/json
+      description: 修改密码
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 旧密码
+        in: query
+        name: old_pass
+        required: true
+        type: string
+      - description: 新密码
+        in: query
+        name: new_pass
+        required: true
+        type: string
+      produces:
+      - application/json
+      summary: 修改密码
+      tags:
+      - 公司
+  /auth/collection:
+    post:
+      consumes:
+      - application/json
+      description: 我的收藏
+      parameters:
+      - description: 公司ID
+        in: query
+        name: company_id
+        required: true
+        type: integer
+      - description: 分类ID
+        in: query
+        name: category_id
+        required: true
+        type: integer
+      - description: 收藏或取消收藏(收藏：true, 取消：false)
+        in: query
+        name: action
+        required: true
+        type: string
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"message":"ok"}'
+          schema:
+            type: string
+      summary: 我的收藏
+      tags:
+      - 我的收藏
+  /auth/collection/:
+    get:
+      consumes:
+      - application/json
+      description: 根据ID查看收藏（一条记录）
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 收藏ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"message":"ok"}'
+          schema:
+            type: string
+      summary: 根据ID查看收藏（一条记录）
+      tags:
+      - 我的收藏
+  /auth/collections:
+    get:
+      consumes:
+      - application/json
+      description: 收藏列表
+      parameters:
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量
+        in: query
+        name: limit
+        type: integer
+      - description: 排序
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"message":"ok"}'
+          schema:
+            type: string
+      summary: 收藏列表
+      tags:
+      - 收藏
+  /auth/comment:
+    post:
+      consumes:
+      - application/json
+      description: 留言创建
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 公司ID
+        in: query
+        name: company_id
+        required: true
+        type: integer
+      - description: 留言内容
+        in: query
+        name: content
+        required: true
+        type: string
+      - description: 留言状态(1:未审核，2：已通过，3：已拒绝, 4:已删除，5回复)
+        in: query
+        name: state
+        type: integer
+      - description: 留言回复
+        in: query
+        name: reply
+        type: string
+      - description: 审批内容
+        in: query
+        name: examination
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"message":"ok"}'
+          schema:
+            type: string
+      summary: 留言创建
+      tags:
+      - 留言
+  /auth/comment/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 留言获得（获取一条）
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 留言ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 留言状态(1:未审核，2：已通过，3：已拒绝, 4:已删除)
+        in: query
+        name: state
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"message":"ok"}'
+          schema:
+            type: string
+      summary: 留言获得（获取一条）
+      tags:
+      - 留言
+    put:
+      consumes:
+      - application/json
+      description: 留言更新
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 留言内容
+        in: query
+        name: content
+        required: true
+        type: string
+      - description: 留言状态(1:未审核，2：已通过，3：已拒绝, 4:已删除)
+        in: query
+        name: state
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"message":"ok"}'
+          schema:
+            type: string
+      summary: 留言更新
+      tags:
+      - 留言
+  /auth/comment/comment_with_replys:
+    post:
+      consumes:
+      - application/json
+      description: 回复删除(批量)
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 留言ids
+        in: query
+        name: ids
+        required: true
+        type: '[]int'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"message":"ok"}'
+          schema:
+            type: string
+      summary: 回复删除(批量)
+      tags:
+      - 留言回复删除
+  /auth/comment/reviews_replies:
+    post:
+      consumes:
+      - application/json
+      description: 留言审批和回复(可批量)
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 留言ids
+        in: query
+        name: ids
+        required: true
+        type: '[]int'
+      - description: 执行审批或者回复操作(reply:回复操作,pass:审批通过操作,return:审批驳回操作)
+        in: query
+        name: action
+        required: true
+        type: string
+      - description: 留言状态，1:未审核，2：已通过，3：已拒绝, 4:已删除
+        in: query
+        name: state
+        type: string
+      - description: 留言内容
+        in: query
+        name: content
+        type: string
+      - description: 留言回复
+        in: query
+        name: reply
+        type: string
+      - description: 审批内容
+        in: query
+        name: examination
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"message":"ok"}'
+          schema:
+            type: string
+      summary: 留言审批和回复(可批量)
+      tags:
+      - 留言
+  /auth/comment_with_user/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 留言删除（用户）
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"message":"ok"}'
+          schema:
+            type: string
+      summary: 留言删除
+      tags:
+      - 留言
+  /auth/commentdelete:
+    delete:
+      consumes:
+      - application/json
+      description: 留言删除（管理员）
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 留言IDS
+        in: query
+        name: ids
+        required: true
+        type: array
+      - description: 备注
+        in: query
+        name: content
+        required: true
+        type: string
+      - description: 留言状态(1:未审核，2：已通过，3：已拒绝, 4:已删除)
+        in: query
+        name: state
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"message":"ok"}'
+          schema:
+            type: string
+      summary: 留言删除
+      tags:
+      - 留言
+  /auth/comments:
+    get:
+      consumes:
+      - application/json
+      description: 商家回复列表
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{"data_list":[{"id":1,"user_id":1,"user":null,"company_id":1,"company":{"id":1,"name":"23","logo":"","category_id":0,"category":null,"description":"","business":"","license":"","email":"","level":1,"category_extends":"","address":"","longitude":0,"latitude":0,"city":"","languages":"","mobile":"","user_id":1,"user":null,"active":false,"service_score":0,"specialty_score":0,"comment_total":0,"update_count":0},"state":1,"content":"234234","reply":"","examination":""},{"id":2,"user_id":2,"user":null,"company_id":0,"company":null,"state":1,"content":"","reply":"","examination":""}],"total":2},"message":"success"}'
+          schema:
+            type: string
+      summary: 商家回复列表
+      tags:
+      - 商家回复
+  /auth/comments/:
+    get:
+      consumes:
+      - application/json
+      description: 获取所有留言
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 公司ID
+        in: query
+        name: company_id
+        required: true
+        type: string
+      - description: 留言状态
+        in: query
+        name: state
+        required: true
+        type: string
+      - description: 留言内容
+        in: query
+        name: content
+        required: true
+        type: string
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"message":"ok"}'
+          schema:
+            type: string
+      summary: 获取所有留言
+      tags:
+      - 留言
+  /auth/companies:
+    get:
+      consumes:
+      - application/json
+      description: 公司获取（列表）
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 城市
+        in: query
+        name: city
+        type: string
+      - description: 每页数量
+        in: query
+        name: limit
+        type: integer
+      - description: 排序
+        in: query
+        name: order
+        type: string
+      - description: 公司名称
+        in: query
+        name: name
+        type: string
+      - description: 分类ID
+        in: query
+        name: category_id
+        type: integer
+      - description: 入驻时间左
+        in: query
+        name: start_date
+        type: time
+      - description: 入驻时间右
+        in: query
+        name: end_date
+        type: time
+      - description: 上下架
+        in: query
+        name: active
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"message":"ok"}'
+          schema:
+            type: string
+      summary: 公司获取（列表）
+      tags:
+      - 公司
+  /auth/company/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 获取公司信息
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{"id":1,"name":"23","logo":"","category_id":0,"category":null,"description":"","business":"","license":"","email":"","level_id":1,"category_extends":"","address":"","longitude":0,"latitude":0,"city":"","languages":"","mobile":"","user_id":1,"user":null,"active":false,"service_score":0,"specialty_score":0,"comment_total":0,"update_count":0},"message":"success"}'
+          schema:
+            type: string
+      summary: 获取公司信息
+      tags:
+      - 公司
+    put:
+      consumes:
+      - application/json
+      description: 公司修改
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: 公司修改
+      tags:
+      - 审核公司
+  /auth/company/apply:
+    post:
+      consumes:
+      - application/json
+      description: 申请入驻
+      parameters:
+      - description: 公司名称
+        in: query
+        name: name
+        required: true
+        type: string
+      - description: 公司类别
+        in: query
+        name: category_id
+        required: true
+        type: integer
+      - description: 公司logo
+        in: query
+        name: logo
+        required: true
+        type: string
+      - description: 企业藤本
+        in: query
+        name: license
+        required: true
+        type: string
+      - description: 公司描述
+        in: query
+        name: description
+        required: true
+        type: string
+      - description: 公司邮箱
+        in: query
+        name: email
+        required: true
+        type: string
+      - description: 电话号码
+        in: query
+        name: mobile
+        required: true
+        type: string
+      - description: 所属区域
+        in: query
+        name: city
+        required: true
+        type: string
+      - description: 公司详细地址
+        in: query
+        name: address
+        required: true
+        type: string
+      - description: 地址经度
+        in: query
+        name: longitude
+        required: true
+        type: string
+      - description: 地址纬度
+        in: query
+        name: latitude
+        required: true
+        type: string
+      - description: 当当图片
+        in: query
+        name: dan_dang_images
+        required: true
+        type: array
+      - description: 语言
+        in: query
+        name: languages
+        required: true
+        type: array
+      - description: 业务范围
+        in: query
+        name: business
+        required: true
+        type: string
+      - description: 密码
+        in: query
+        name: password
+        required: true
+        type: string
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: 申请入驻
+      tags:
+      - 审核公司
+  /auth/company_history/{request_no}:
+    get:
+      consumes:
+      - application/json
+      description: 公司审核历史记录
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 公司编号
+        in: query
+        name: request_no
+        required: true
+        type: string
+      produces:
+      - application/json
+      summary: 公司审核历史记录
+      tags:
+      - 公司
+  /auth/company_hot:
+    get:
+      consumes:
+      - application/json
+      description: 公司热门推荐（列表）
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 城市
+        in: query
+        name: city
+        type: string
+      - description: 每页数量
+        in: query
+        name: limit
+        type: integer
+      - description: 排序
+        in: query
+        name: order
+        type: string
+      - description: 公司名称
+        in: query
+        name: name
+        type: string
+      - description: 分类ID
+        in: query
+        name: category_id
+        type: integer
+      - description: 入驻时间左
+        in: query
+        name: start_date
+        type: time
+      - description: 入驻时间右
+        in: query
+        name: end_date
+        type: time
+      - description: 上下架
+        in: query
+        name: active
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"message":"ok"}'
+          schema:
+            type: string
+      summary: 公司热门推荐（列表）
+      tags:
+      - 公司
+  /auth/company_review:
+    post:
+      consumes:
+      - application/json
+      description: 公司审批
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 审核公司ids
+        in: query
+        name: ids
+        required: true
+        type: array
+      - description: '审核操作，pass,return '
+        in: query
+        name: action
+        required: true
+        type: string
+      - description: 审核意见
+        in: query
+        name: message
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":[123123,12313],"message":""}'
+          schema:
+            type: string
+      summary: 公司审批
+      tags:
+      - 审核公司
+  /auth/companyown:
+    get:
+      consumes:
+      - application/json
+      description: 获取拥有的公司信息
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{"id":1,"name":"23","logo":"","category_id":0,"category":null,"description":"","business":"","license":"","email":"","level_id":1,"category_extends":"","address":"","longitude":0,"latitude":0,"city":"","languages":"","mobile":"","user_id":1,"user":null,"active":false,"service_score":0,"specialty_score":0,"comment_total":0,"update_count":0},"message":"success"}'
+          schema:
+            type: string
+      summary: 获取拥有的公司信息
+      tags:
+      - 审核公司
+  /auth/current_banner_images:
+    get:
+      consumes:
+      - application/json
+      description: 获得当前有效轮播图
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: 获得当前有效轮播图
+      tags:
+      - 轮播图组
+  /auth/dashboard/num_admin:
+    get:
+      consumes:
+      - application/json
+      description: 获取统计信息
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: 获取统计信息
+      tags:
+      - 仪表盘
+  /auth/dashboard/num_shop:
+    get:
+      consumes:
+      - application/json
+      description: 获取商家统计信息
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: 获取商家统计信息
+      tags:
+      - 仪表盘
+  /auth/language:
+    post:
+      consumes:
+      - application/json
+      description: 语言创建
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 语言
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{"id":1,"name":"英语"},"message":"success"}'
+          schema:
+            type: string
+      summary: 语言创建
+      tags:
+      - 语言
+  /auth/language/:
+    delete:
+      consumes:
+      - application/json
+      description: 语言删除
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":null,"message":"success"}'
+          schema:
+            type: string
+      summary: 语言删除
+      tags:
+      - 语言
+    get:
+      consumes:
+      - application/json
+      description: 语言查询
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{"id":1,"name":"英语"},"message":"success"}'
+          schema:
+            type: string
+      summary: 语言查询
+      tags:
+      - 语言
+    put:
+      consumes:
+      - application/json
+      description: 语言修改
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: 语言
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{"id":1,"name":"英语"},"message":"success"}'
+          schema:
+            type: string
+      summary: 语言修改
+      tags:
+      - 语言
+  /auth/languages:
+    get:
+      consumes:
+      - application/json
+      description: 语言列表
+      parameters:
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量
+        in: query
+        name: limit
+        type: integer
+      - description: 排序
+        in: query
+        name: order
         type: string
       produces:
       - application/json
@@ -29,36 +1532,35 @@ paths:
           description: '{}'
           schema:
             type: string
-      summary: 用户用户openid
+      summary: 语言列表
       tags:
-      - 微信
-  /auth/file_upload:
-    post:
+      - 语言
+  /auth/menu/{id}:
+    delete:
       consumes:
-      - multipart/form-data
-      description: 文件上传
+      - application/json
+      description: 菜单删除
       parameters:
+      - description: 菜单ID
+        in: path
+        name: id
+        required: true
+        type: integer
       - description: Token
         in: header
         name: Authorization
         required: true
         type: string
-      - description: 上传文件
-        in: query
-        name: file
-        required: true
-        type: file
       produces:
       - application/json
       responses:
         "200":
-          description: OK
+          description: '{"code":200,"data":null,"message":"success"}'
           schema:
             type: string
-      summary: 文件上传
+      summary: 菜单删除
       tags:
-      - 文件上传
-  /auth/menu/{id}:
+      - 菜单
     get:
       consumes:
       - application/json
@@ -150,6 +1652,93 @@ paths:
       summary: 系统菜单树
       tags:
       - 菜单
+  /auth/my_collection:
+    get:
+      consumes:
+      - application/json
+      description: 查询我的收藏
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 分页page
+        in: query
+        name: page
+        type: integer
+      - description: 分页条数
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"message":"ok"}'
+          schema:
+            type: string
+      summary: 查询我的收藏
+      tags:
+      - 我的收藏
+  /auth/my_collection_with_company:
+    get:
+      consumes:
+      - application/json
+      description: 查询我的收藏（返回公司）
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 分页page
+        in: query
+        name: page
+        type: integer
+      - description: 分页条数
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"message":"ok"}'
+          schema:
+            type: string
+      summary: 查询我的收藏（返回公司）
+      tags:
+      - 我的收藏
+  /auth/my_comment:
+    get:
+      consumes:
+      - application/json
+      description: 查询我的留言
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 分页page
+        in: query
+        name: page
+        type: integer
+      - description: 分页条数
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"message":"ok"}'
+          schema:
+            type: string
+      summary: 查询我的留言
+      tags:
+      - 留言
   /auth/pay/wxapp:
     post:
       consumes:
@@ -161,7 +1750,7 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: 费用（分），1元=100分，
+      - description: 费用（分
         in: query
         name: total_fee
         required: true
@@ -181,6 +1770,11 @@ paths:
         name: month
         required: true
         type: integer
+      - description: 公司编号
+        in: query
+        name: request_no
+        required: true
+        type: string
       - description: 微信openid
         in: query
         name: open_id
@@ -201,6 +1795,302 @@ paths:
       summary: 微信支付
       tags:
       - 微信
+  /auth/pay_record:
+    post:
+      consumes:
+      - application/json
+      description: 支付记录创建
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 购买月数
+        in: query
+        name: month
+        required: true
+        type: integer
+      - description: 购买等级
+        in: query
+        name: level_id
+        required: true
+        type: integer
+      - description: 费用（分
+        in: query
+        name: total_fee
+        required: true
+        type: integer
+      - description: 商品名称
+        in: query
+        name: pay_statement
+        required: true
+        type: string
+      - description: 支付方式wx,zfb,yhk
+        in: query
+        name: pay_type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"message":"success"}'
+          schema:
+            type: string
+      summary: 支付记录创建
+      tags:
+      - 支付记录
+  /auth/pay_record_action/{id}/{ok}:
+    get:
+      consumes:
+      - application/json
+      description: 支付记录确认通过
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 通过
+        in: query
+        name: action
+        required: true
+        type: ok
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"message":"success"}'
+          schema:
+            type: string
+      summary: 支付记录不通过
+      tags:
+      - 支付记录
+  /auth/pre_comment:
+    post:
+      consumes:
+      - application/json
+      description: 历史留言创建
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 用户ID
+        in: query
+        name: user_id
+        required: true
+        type: integer
+      - description: 公司ID
+        in: query
+        name: company_id
+        required: true
+        type: integer
+      - description: 留言内容
+        in: query
+        name: content
+        required: true
+        type: string
+      - description: 留言ID
+        in: query
+        name: comment_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{"id":1,"user_id":1,"company_id":1,"content":"好吃"，"comment_id":1,},"message":"success"}'
+          schema:
+            type: string
+      summary: 历史留言创建
+      tags:
+      - 历史留言
+  /auth/pre_comment/:
+    get:
+      consumes:
+      - application/json
+      description: 历史留言删除
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 用户ID
+        in: query
+        name: user_id
+        required: true
+        type: integer
+      - description: 公司ID
+        in: query
+        name: company_id
+        required: true
+        type: integer
+      - description: 留言内容
+        in: query
+        name: content
+        required: true
+        type: string
+      - description: 留言ID
+        in: query
+        name: comment_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":null,"message":"success"}'
+          schema:
+            type: string
+      summary: 历史留言删除
+      tags:
+      - 历史留言
+    put:
+      consumes:
+      - application/json
+      description: 历史留言修改
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 用户ID
+        in: query
+        name: user_id
+        required: true
+        type: integer
+      - description: 公司ID
+        in: query
+        name: company_id
+        required: true
+        type: integer
+      - description: 留言内容
+        in: query
+        name: content
+        required: true
+        type: string
+      - description: 留言ID
+        in: query
+        name: comment_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{"id":1,"user_id":1,"company_id":1,"content":"好吃"，"comment_id":1,},"message":"success"}'
+          schema:
+            type: string
+      summary: 历史留言修改
+      tags:
+      - 历史留言
+  /auth/pre_comments:
+    get:
+      consumes:
+      - application/json
+      description: 历史留言列表
+      parameters:
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量
+        in: query
+        name: limit
+        type: integer
+      - description: 排序
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{}'
+          schema:
+            type: string
+      summary: 历史留言列表
+      tags:
+      - 历史留言
+  /auth/pre_companies:
+    get:
+      consumes:
+      - application/json
+      description: 公司审核获取（列表）
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量
+        in: query
+        name: limit
+        type: integer
+      - description: 排序
+        in: query
+        name: order
+        type: string
+      - description: 公司名称
+        in: query
+        name: name
+        type: string
+      - description: 分类ID
+        in: query
+        name: category_id
+        type: integer
+      - description: 入驻时间左
+        in: query
+        name: start_date
+        type: time
+      - description: 入驻时间右
+        in: query
+        name: end_date
+        type: time
+      - description: 上下架
+        in: query
+        name: active
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"message":"ok"}'
+          schema:
+            type: string
+      summary: 公司审核获取（列表）
+      tags:
+      - 公司
+  /auth/pre_company/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 获取审核公司信息
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{"id":1,"name":"23","logo":"","category_id":0,"category":null,"description":"","business":"","license":"","email":"","level_id":1,"category_extends":"","address":"","longitude":0,"latitude":0,"city":"","languages":"","mobile":"","user_id":1,"user":null,"active":false,"service_score":0,"specialty_score":0,"comment_total":0,"update_count":0},"message":"success"}'
+          schema:
+            type: string
+      summary: 获取审核公司信息
+      tags:
+      - 审核公司
   /auth/refresh:
     get:
       consumes:
@@ -222,6 +2112,52 @@ paths:
       summary: Token刷新
       tags:
       - Token刷新
+  /auth/reply:
+    get:
+      consumes:
+      - application/json
+      description: 留言回复查询
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":[{"id":1,"user_id":1,"reply":"通过"},{"id":2,"user_id":1,"reply":"通过"}],"message":"success"}'
+          schema:
+            type: string
+      summary: 留言回复查询
+      tags:
+      - 留言回复
+    post:
+      consumes:
+      - application/json
+      description: 留言回复创建
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 留言回复
+        in: query
+        name: reply
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{"id":1,"user_id":1,"reply":"通过"},"message":"success"}'
+          schema:
+            type: string
+      summary: 留言回复创建
+      tags:
+      - 留言回复
   /auth/role:
     post:
       consumes:
@@ -367,6 +2303,158 @@ paths:
       summary: 角色列表
       tags:
       - 角色
+  /auth/satisfaction:
+    post:
+      consumes:
+      - application/json
+      description: 满意度创建
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 公司ID
+        in: query
+        name: company_id
+        required: true
+        type: integer
+      - description: 专业度得分
+        in: query
+        name: specialty
+        required: true
+        type: integer
+      - description: 服务得分
+        in: query
+        name: service
+        required: true
+        type: integer
+      - description: 总体评价
+        in: query
+        name: total
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"message":"ok"}'
+          schema:
+            type: string
+      summary: 满意度创建
+      tags:
+      - 满意度
+  /auth/satisfaction/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 满意度删除
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - {}
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{"data_list":[{"id":1,"user_id":1,"user":null,"company_id":1,"company":{"id":1,"name":"23","logo":"","category_id":0,"category":null,"description":"","business":"","license":"","email":"","level":1,"category_extends":"","address":"","longitude":0,"latitude":0,"city":"","languages":"","mobile":"","user_id":1,"user":null,"active":false,"service_score":0,"specialty_score":0,"comment_total":0,"update_count":0},"state":1,"content":"234234","reply":"","examination":""},{"id":2,"user_id":2,"user":null,"company_id":0,"company":null,"state":1,"content":"","reply":"","examination":""}],"total":2},"message":"success"}'
+          schema:
+            type: string
+      summary: 满意度删除
+      tags:
+      - 满意度
+    get:
+      consumes:
+      - application/json
+      description: 满意度获取（一条记录）
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - {}
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{"data_list":[{"id":1,"user_id":1,"user":null,"company_id":1,"company":{"id":1,"name":"23","logo":"","category_id":0,"category":null,"description":"","business":"","license":"","email":"","level":1,"category_extends":"","address":"","longitude":0,"latitude":0,"city":"","languages":"","mobile":"","user_id":1,"user":null,"active":false,"service_score":0,"specialty_score":0,"comment_total":0,"update_count":0},"state":1,"content":"234234","reply":"","examination":""},{"id":2,"user_id":2,"user":null,"company_id":0,"company":null,"state":1,"content":"","reply":"","examination":""}],"total":2},"message":"success"}'
+          schema:
+            type: string
+      summary: 满意度获取（一条记录）
+      tags:
+      - 满意度
+    put:
+      consumes:
+      - application/json
+      description: 满意度编辑
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: 专业度得分
+        in: query
+        name: specialty
+        required: true
+        type: integer
+      - description: 服务得分
+        in: query
+        name: service
+        required: true
+        type: integer
+      - description: 总体评价
+        in: query
+        name: total
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{"data_list":[{"id":1,"user_id":1,"user":null,"company_id":1,"company":{"id":1,"name":"23","logo":"","category_id":0,"category":null,"description":"","business":"","license":"","email":"","level":1,"category_extends":"","address":"","longitude":0,"latitude":0,"city":"","languages":"","mobile":"","user_id":1,"user":null,"active":false,"service_score":0,"specialty_score":0,"comment_total":0,"update_count":0},"state":1,"content":"234234","reply":"","examination":""},{"id":2,"user_id":2,"user":null,"company_id":0,"company":null,"state":1,"content":"","reply":"","examination":""}],"total":2},"message":"success"}'
+          schema:
+            type: string
+      summary: 满意度编辑
+      tags:
+      - 满意度
+  /auth/satisfactions:
+    get:
+      consumes:
+      - application/json
+      description: 满意度列表
+      parameters:
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量
+        in: query
+        name: limit
+        type: integer
+      - description: 排序
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{}'
+          schema:
+            type: string
+      summary: 满意度列表
+      tags:
+      - 满意度
   /auth/self:
     get:
       consumes:
@@ -394,6 +2482,21 @@ paths:
           schema:
             type: string
       summary: 个人信息修改
+      tags:
+      - 用户
+  /auth/user/:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 用户注册
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{"id":1,"name":"admin","alias":"","email":"admin@block.vc","password":"","roles":[],"openid":"","active":true,"is_admin":true},"message":"success"}}'
+          schema:
+            type: string
+      summary: 用户注册
       tags:
       - 用户
   /auth/user/{id}:
@@ -541,6 +2644,158 @@ paths:
       summary: 微信上传
       tags:
       - 微信
+  /banner_group/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 轮播图组获得
+      parameters:
+      - description: 轮播图组ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{"id":1,"active":true,"start_date":"2018-06-28T23:04:05+08:00","end_date":"2018-07-28T23:04:05+08:00","name":"六一","display_time":3},"message":"success"}'
+          schema:
+            type: string
+      summary: 轮播图组获得
+      tags:
+      - 轮播图组
+  /banner_image:
+    get:
+      consumes:
+      - application/json
+      description: 轮播图获得
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 轮播图ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{"id":1,"description":"2e31231","sequence":1,"image":"/upload_files/2bf92d23837ff63b44004f3362d4956d.png","group_id":0,"group":null,"url":"www.baidu.com"},"message":"success"}'
+          schema:
+            type: string
+      summary: 轮播图获得
+      tags:
+      - 轮播图
+  /banner_images:
+    get:
+      consumes:
+      - application/json
+      description: 轮播图列表
+      parameters:
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量
+        in: query
+        name: limit
+        type: integer
+      - description: 排序
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":[{"id":2,"description":"2e31231","sequence":2,"image":"/upload_files/2bf92d23837ff63b44004f3362d4956d.png","group_id":0,"group":null,"url":"www.baidu.com"},{"id":3,"description":"2e31231","sequence":3,"image":"/upload_files/2bf92d23837ff63b44004f3362d4956d.png","group_id":0,"group":null,"url":"www.baidu.com"},{"id":1,"description":"2e31231","sequence":1,"image":"/upload_files/267706db488ba3876c9bdaf36b70df51.png","group_id":1,"group":null,"url":"www.baidu.com12313123"}],"message":"success"}'
+          schema:
+            type: string
+      summary: 轮播图列表
+      tags:
+      - 轮播图
+  /category_extend/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 分类拓展查询
+      parameters:
+      - description: 分类拓展ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"message":"ok"}'
+          schema:
+            type: string
+      summary: 根据ID获取一条记录
+      tags:
+      - 分类拓展
+  /category_extends/{key}/{value}:
+    get:
+      consumes:
+      - application/json
+      description: 分类拓展获取列表
+      parameters:
+      - description: 根据ID查询
+        in: path
+        name: id
+        type: integer
+      - description: 根据分类ID查询
+        in: path
+        name: category_id
+        type: integer
+      - description: 根据分类拓展名称查询
+        in: path
+        name: name
+        type: string
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"message":"ok"}'
+          schema:
+            type: string
+      summary: 分类拓展获取列表
+      tags:
+      - 分类拓展
   /login:
     post:
       consumes:
@@ -594,27 +2849,6 @@ paths:
           schema:
             type: string
       summary: 用户微信登录
-      tags:
-      - 用户登录
-  /logout:
-    post:
-      consumes:
-      - application/json
-      description: 用户退出
-      parameters:
-      - description: Token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: '{"code":200,"data":{},"message":"ok"}'
-          schema:
-            type: string
-      summary: 用户退出
       tags:
       - 用户登录
 swagger: "2.0"
