@@ -40,7 +40,8 @@ func addRouter(router *gin.Engine) {
 		//微信  pays
 		authRouter.POST("/pay/wxapp", controllers.WxAppPay)
 		authRouter.POST("/pay/asyncback", controllers.WxAppPayAsyncBack)
-		authRouter.POST("/weixin_upload", controllers.WeiXinUpload)
+		// 上传
+		authRouter.POST("/image_upload", controllers.ImageUpload)
 
 		// refresh token
 		authRouter.GET("/refresh", controllers.RefreshToken)
