@@ -1,0 +1,105 @@
+# config information
+
+# init data
+init:
+  api: true #  初始化接口
+  role: true # 初始化角色
+  menu: true # 初始化菜单
+# server config information
+server:
+  mode: release # debug,release
+  host: 0.0.0.0
+  port: 8000
+  token_expire_second: 360000
+  enable_https: false  # 后台开启https
+  cert_file: conf/https/cert.pem  # https对应的私钥
+  key_file: conf/https/key.pem # https对应的公钥
+  jwt_public_key_path: key/jwt/tm.rsa.pub
+  jwt_private_key_path: conf/jwt/tm.rsa
+  system_static_file_path: system_statics
+log:
+  level: error
+  config_file:
+# database config information
+database:
+  max_idle: 10 # max idle connections
+  max_open: 100  #max open connections
+  type: postgres # postgres,mysql,sqlite3
+  # postgres: host=db_host port=db_port user=db_user db_name=code sslmode=disable password=db_password
+  # mysql: db_user:db_password@(db_host:db_port)/db_name?charset=utf8&parseTime=True&loc=Local
+  # sqlite3: db_path        eg :/tmp/gorm.db
+  connect: host=localhost port=5432 user=postgres dbname=gin sslmode=disable password=postgres
+
+
+
+
+
+# redis config information
+redis:
+  address: # address
+  password: # password
+  db_name: # number
+
+# admin user information
+admin_user:
+  name: admin
+  mobile: 123123
+  password: hexiaoyun128123.
+  email: admin@block.vc
+
+# we chat application information
+we_chat:
+  app_id: wx944474a9f7c4
+  secret: f858ea78fd1891d3a1b73
+  openid_url: https://api.weixin.qq.com/sns/jscode2session?grant_type=authorization_code
+  # pay config params
+  mch_id: 1510246491 #商户号
+  notify_url: www.baidu.com # 通知地址
+  pay_url: https://api.mch.weixin.qq.com/pay/unifiedorder #支付地址
+  pay_sign_key: qwertyuio1276pasdfghjkli
+
+
+# file upload information
+file_upload:
+  storage: local #loacl,qiniu,
+  path: upload_files # only for local
+
+
+# qi niu cloud storage config information
+qiniu:
+  access_key: _nzUK09jSvSQFjkZTiih0uE8B
+  secret_key: X4Ki-ifcokT0IjQl8-auIMgth6
+  bucket: hexiaoyun128
+  domain: p9288tivp.bkt.123456.com
+
+# send message queue config information
+send_message_queue:
+  enable: false
+  type:  amqp # amqp,kafka,redis
+  # when send type is redis, message queue config information
+  redis:
+  # when send  type is amqp, message queue config information
+  kafka:
+  # when send type is amqp, message queue config information
+  amqp:
+    url: amqp://user:password@localhost:5672/
+
+
+# receive message queue config information
+receive_message_queue:
+  enable: false
+  type: amqp # amqp,kafka,redis
+  # when receive type is redis, message queue config information
+  redis:
+  # when receive  type is kafka, message queue config information
+  kafka:
+  # when receive type is amqp, message queue config information
+  ramqp:
+    url: amqp://user:password@localhost:5672/
+
+
+# Image size
+image:
+  # 上传图片大小，单位M
+  size: 10
+
