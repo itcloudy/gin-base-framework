@@ -105,6 +105,7 @@ type configModel struct {
 	Init                *initModel         `yaml:"init"`
 	Image               *image             `yaml:"image"`
 	Quartz              *quartz            `yaml:"quartz"`
+	Elastic             *elasticModel      `yaml:"elastic"`
 }
 type logModel struct {
 	Mode  string `yaml:"mode"`
@@ -120,4 +121,13 @@ type quartz struct {
 	UpdateCompanyEditTime string `yaml:"update_company_edit_count_time"`
 	InitVisitCountTime    string `yaml:"init_visit_count_time"`
 	CompanyLevelDownTime  string `yaml:"company_level_down_time"`
+}
+
+type elasticModel struct {
+	Enable         bool     `yaml:"enable"`
+	ServerAddress  []string `yaml:"server_address"`
+	SnifferEnabled bool     `json:"yaml"`
+	Auth           bool     `yaml:"auth"`
+	AuthUsername   string   `yaml:"auth_username"`
+	AuthPassword   string   `yaml:"auth_password"`
 }

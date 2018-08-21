@@ -1,0 +1,10 @@
+version: '2'
+services:
+  redis:
+    image: redis:5.0-rc4
+    links:
+      - web
+    networks: back-tier
+  elasticsearch:
+    image: elasticsearch:5.6.10
+

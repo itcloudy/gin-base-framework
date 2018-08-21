@@ -4,6 +4,7 @@ import (
 	"github.com/casbin/casbin"
 	"github.com/go-redis/redis"
 	"github.com/jinzhu/gorm"
+	"gopkg.in/olivere/elastic.v5"
 	"go.uber.org/zap"
 )
 
@@ -28,5 +29,6 @@ var (
 	Image                   *image             // image size
 	Quartz                  *quartz            // cron task
 	Logger                  *zap.Logger        // log instance
+	ElasticClient           *elastic.Client    // elastic client
 
 )

@@ -32,7 +32,14 @@ database:
   connect: host=localhost port=5432 user=postgres dbname=gin sslmode=disable password=postgres
 
 
-
+elastic:
+  enable: true
+  server_address:
+    - http://127.0.0.1:9200
+  sniffer_enabled: false
+  auth: false
+  auth_username:
+  auth_password:
 
 
 # redis config information

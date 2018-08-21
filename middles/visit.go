@@ -7,7 +7,7 @@ import (
 
 func VisitHistory() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		addr:=c.Request.RemoteAddr
-		common.Logger.Info("visit address"+addr)
+		addr := c.Request.RemoteAddr
+		common.Logger.Info("visit address" + addr)
 	}
 }

@@ -4,7 +4,6 @@ import (
 	"github.com/hexiaoyun128/gin-base-framework/common"
 )
 
-
 func RoleSystemApiEnforcerDaemon(policies []common.PolicyAction) (err error) {
 	en := common.Enforcer
 	for _, rule := range policies {

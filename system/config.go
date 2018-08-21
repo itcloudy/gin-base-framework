@@ -9,6 +9,7 @@ import (
 	"github.com/hexiaoyun128/gin-base-framework/middles"
 	"github.com/hexiaoyun128/gin-base-framework/models"
 	"github.com/jinzhu/gorm"
+	"gopkg.in/olivere/elastic.v5"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/yaml.v2"
@@ -16,6 +17,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"context"
 )
 
 //LoadConfigInformation load config information for application
@@ -85,6 +87,46 @@ func LoadConfigInformation(configPath string) (err error) {
 	// quartz task
 	common.Quartz = common.ConfigInfo.Quartz
 
+	// log config load
+	if common.LogInfo.Mode == "basic" {
+		logPath := common.LogInfo.Path   //log path
+		logLevel := common.LogInfo.Level // log level
+		isDebug := true                  // log mode
+		if common.ServerInfo.Mode == "release" {
+			isDebug = false
+		}
+		initBasicLogger(logLevel, logPath, isDebug)
+		log.SetFlags(log.Lmicroseconds | log.Lshortfile | log.LstdFlags)
+	} else if common.LogInfo.Mode == "advanced" {
+		initAdvancedLogger()
+	}
+
+	// elastic
+	if common.ConfigInfo.Elastic.Enable {
+		// elasticsearch need auth
+		if common.ConfigInfo.Elastic.Auth {
+			common.ElasticClient, err = elastic.NewClient(
+				elastic.SetSniff(common.ConfigInfo.Elastic.SnifferEnabled),
+				elastic.SetURL(common.ConfigInfo.Elastic.ServerAddress...),
+				elastic.SetBasicAuth(common.ConfigInfo.Elastic.AuthUsername, common.ConfigInfo.Elastic.AuthPassword),
+			)
+		} else {
+			common.ElasticClient, err = elastic.NewClient(
+				elastic.SetSniff(common.ConfigInfo.Elastic.SnifferEnabled),
+				elastic.SetURL(common.ConfigInfo.Elastic.ServerAddress...),
+			)
+		}
+		if err != nil {
+			common.Logger.Fatal("elasticsearch connect failed " + err.Error())
+		}
+		if info, code, err := common.ElasticClient.Ping(common.ConfigInfo.Elastic.ServerAddress[0]).Do(context.Background()); err != nil {
+			common.Logger.Fatal("elasticsearch ping failed " + err.Error())
+		} else {
+			common.Logger.Info(fmt.Sprintf("elasticsearch name: %s version: %+v code: %d", info.Name, info.Version, code))
+		}
+
+	}
+
 	//database connect
 	var db *gorm.DB
 	switch common.DatabaseInfo.DBType {
@@ -113,22 +155,6 @@ func LoadConfigInformation(configPath string) (err error) {
 	//admin user insert to database
 	common.AdminUserInfo = common.ConfigInfo.AdminUser
 
-	// log config load
-	if common.LogInfo.Mode == "basic" {
-		logPath := common.LogInfo.Path   //log path
-		logLevel := common.LogInfo.Level // log level
-		isDebug := true                  // log mode
-		if common.ServerInfo.Mode == "release" {
-			isDebug = false
-		}
-		initBasicLogger(logLevel, logPath, isDebug)
-		log.SetFlags(log.Lmicroseconds | log.Lshortfile | log.LstdFlags)
-	} else if common.LogInfo.Mode == "advanced" {
-		initAdvancedLogger()
-	}
-
-	defer common.Logger.Sync()
-	common.Logger.Info("constructed a logger")
 	// init api
 	if common.InitInfo.Api {
 		initial_data.InitApi()

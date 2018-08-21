@@ -1,6 +1,7 @@
 # Gin Base Framework
 
 ## [目录说明](tree.md) 
+
 请在配置文件: conf/config.yml中修改数据链接和端口说明
 运行程序:
 ```go
@@ -32,3 +33,5 @@ swag init
 ```sh 
 docker build -t gin-base-framework .
 ```
+## 功能说明及相关文档
+- [Elasticsearch部署](elasticsearch.md)
