@@ -105,7 +105,6 @@ type configModel struct {
 	Init                *initModel         `yaml:"init"`
 	Image               *image             `yaml:"image"`
 	Quartz              *quartz            `yaml:"quartz"`
-	Logger              *logModel          `yaml:"logger"`
 }
 type logModel struct {
 	Mode  string `yaml:"mode"`
