@@ -4,7 +4,6 @@ import (
 	"time"
 )
 
-
 type initModel struct {
 	Menu         bool `yaml:"menu"`          // init menu information
 	Role         bool `yaml:"role"`          // init role information
@@ -12,7 +11,7 @@ type initModel struct {
 	CompanyLevel bool `yaml:"company_level"` // init company level information
 	Category     bool `yaml:"category"`      // init category
 	Api          bool `yaml:"api"`           // init api
-	hexiaoyun128      bool `yaml:"hexiaoyun128"`       // init hexiaoyun128 table information
+	hexiaoyun128 bool `yaml:"hexiaoyun128"`  // init hexiaoyun128 table information
 	Language     bool `yaml:"language"`      // init language
 }
 
@@ -82,7 +81,7 @@ type qiNiuModel struct {
 type messageQueueModel struct {
 	Enable bool   `yaml:"enable"`
 	Type   string `yaml:"type"`
-	Redis struct {
+	Redis  struct {
 	} `yaml:"redis"`
 	Kafka struct {
 	} `yaml:"kafka"`
@@ -91,10 +90,6 @@ type messageQueueModel struct {
 	} `yaml:"amqp"`
 }
 
-type logModel struct {
-	Level      string `yaml:"level"`
-	ConfigFile string `yaml:"config_file"`
-}
 type configModel struct {
 	Server              *serverModel       `yaml:"server"`
 	Database            *databaseModel     `yaml:"database"`
@@ -110,9 +105,13 @@ type configModel struct {
 	Init                *initModel         `yaml:"init"`
 	Image               *image             `yaml:"image"`
 	Quartz              *quartz            `yaml:"quartz"`
-	//hexiaoyun128SDK          *hexiaoyun128_sdk_golang.hexiaoyun128Config `yaml:"hexiaoyun128_sdk"`
+	Logger              *logModel          `yaml:"logger"`
 }
-
+type logModel struct {
+	Mode  string `yaml:"mode"`
+	Path  string `yaml:"file"`
+	Level string `yaml:"level"`
+}
 type image struct {
 	Size int `yaml:"size"`
 }

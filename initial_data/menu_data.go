@@ -1,7 +1,6 @@
 package initial_data
 
 import (
-	log "github.com/cihub/seelog"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 
@@ -9,6 +8,7 @@ import (
 	"github.com/hexiaoyun128/gin-base-framework/common"
 	"github.com/hexiaoyun128/gin-base-framework/models"
 	"github.com/hexiaoyun128/gin-base-framework/services"
+	"go.uber.org/zap"
 	"os"
 	"path"
 )
@@ -39,16 +39,16 @@ func InitMenu() {
 	filePath := path.Join(common.WorkSpace, "menu_data.yml")
 	menuData, err := ioutil.ReadFile(filePath)
 	if err != nil {
-		log.Errorf("menu init file read failed: %s", err)
+		common.Logger.Error("menu init file read failed", zap.Error(err))
 		fmt.Printf("menu init file read failed: %s", err)
-		log.Flush()
+
 		os.Exit(-1)
 	}
 	err = yaml.Unmarshal(menuData, &systemMs)
 	if err != nil {
-		log.Errorf("menu init data parse failed: %s", err)
+		common.Logger.Error("menu init data parse failed", zap.Error(err))
 		fmt.Printf("menu init data parse failed: %s", err)
-		log.Flush()
+
 		os.Exit(-1)
 	}
 	for _, m := range systemMs.Menus {
@@ -72,8 +72,8 @@ func insertMenus(men *menuParam) {
 	sysMenu.UniqueTag = men.UniqueTag
 	m, err, _ = services.MenuCreate(&sysMenu)
 	if err != nil {
-		log.Errorf("menu create failed : %s,%v", err, m)
-		log.Flush()
+		common.Logger.Error("menu create failed", zap.Error(err))
+
 		os.Exit(-1)
 	}
 

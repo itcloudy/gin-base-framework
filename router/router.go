@@ -1,9 +1,9 @@
 package router
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/hexiaoyun128/gin-base-framework/common"
 	"github.com/hexiaoyun128/gin-base-framework/middles"
-	"github.com/gin-gonic/gin"
 )
 
 //setTemplate set template
@@ -27,6 +27,7 @@ func InitRouter() *gin.Engine {
 	router := gin.Default()
 
 	router.Use(middles.Cors())
+	router.Use(middles.VisitHistory())
 	// set template
 	setTemplate(router)
 	// set middlewares

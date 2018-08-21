@@ -9,7 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
-	"strings"
 )
 
 type ResponseJson struct {
@@ -58,7 +57,7 @@ func StringsJoin(strs ...string) string {
 	return str
 
 }
-func goin2String(split string, strs ...interface{}) string {
+func Join2String(split string, strs ...interface{}) string {
 	var str string
 	var b bytes.Buffer
 	strsLen := len(strs)
@@ -100,26 +99,4 @@ func String2Int(str string, defVal int) int {
 	} else {
 		return in
 	}
-}
-
-func GetVisitorInfo(c *gin.Context) map[string]interface{} {
-	var (
-		visitorInfo map[string]interface{}
-	)
-	visitorInfo = make(map[string]interface{})
-	visitorInfo["header"] = c.Request.Header
-	visitorInfo["url"] = c.Request.URL
-	visitorInfo["host"] = c.Request.Host
-	visitorInfo["uri"] = c.Request.RequestURI
-	visitorInfo["ip"] = strings.Split(visitorInfo["host"].(string), ":")[0]
-	if visitorInfo["ip"] == "localhost" {
-		visitorInfo["ip"] = "127.0.0.1"
-	}
-	return visitorInfo
-}
-
-func TimZero(t string) string {
-	timeArr := strings.Split(t, "T")
-	timeString := timeArr[0] + "T00:00:00Z"
-	return timeString
 }

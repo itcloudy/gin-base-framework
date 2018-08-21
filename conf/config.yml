@@ -7,19 +7,20 @@ init:
   menu: true # 初始化菜单
 # server config information
 server:
-  mode: release # debug,release
+  mode: debug # debug,release
   host: 0.0.0.0
   port: 8000
   token_expire_second: 360000
   enable_https: false  # 后台开启https
   cert_file: conf/https/cert.pem  # https对应的私钥
   key_file: conf/https/key.pem # https对应的公钥
-  jwt_public_key_path: key/jwt/tm.rsa.pub
+  jwt_public_key_path: conf/jwt/tm.rsa.pub
   jwt_private_key_path: conf/jwt/tm.rsa
   system_static_file_path: system_statics
 log:
-  level: error
-  config_file:
+  mode: basic # advanced,basic
+  level: INFO # DEBUG,ERROR, INFO
+  file: log # log file path container log file name
 # database config information
 database:
   max_idle: 10 # max idle connections
@@ -62,7 +63,7 @@ we_chat:
 # file upload information
 file_upload:
   storage: local #loacl,qiniu,
-  path: upload_files # only for local
+  path: upload # only for local
 
 
 # qi niu cloud storage config information
@@ -103,3 +104,13 @@ image:
   # 上传图片大小，单位M
   size: 10
 
+# Quartz time config
+quartz:
+  # 统计公司专业分数、服务分数(每天1点)
+  update_score_time: "*/1 * * * * ?"
+  # 重置公司编辑次数(每月1号1点)
+  update_company_edit_count_time: "0 0 1 1 * ?"
+  # 统计访问次数
+  init_visit_count_time: "0 0 1 * * ?"
+  # 公司等级降级
+  company_level_down_time: "0 0 1 * * ?"

@@ -3,23 +3,23 @@ package controllers
 import (
 	"encoding/json"
 
+	"bytes"
+	"crypto/md5"
+	"encoding/hex"
+	"encoding/xml"
+	"fmt"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/hexiaoyun128/gin-base-framework/common"
 	"github.com/hexiaoyun128/gin-base-framework/models"
 	"github.com/hexiaoyun128/gin-base-framework/services"
-	"github.com/gin-gonic/gin"
+	"github.com/satori/go.uuid"
 	"io/ioutil"
 	"net/http"
-	"github.com/gin-gonic/gin/binding"
+	"sort"
+	"strconv"
 	"strings"
 	"time"
-	"strconv"
-	"sort"
-	"crypto/md5"
-	"encoding/hex"
-	"fmt"
-	"github.com/satori/go.uuid"
-	"encoding/xml"
-	"bytes"
 )
 
 type userModel struct {
@@ -113,7 +113,6 @@ func WxAppPay(c *gin.Context) {
 		common.GenResponse(c, common.PAY_PARAMS_ERR, err, "failed")
 		return
 	}
-
 
 	// 商户支付信息
 	weChatInfo := common.WeChatInfo

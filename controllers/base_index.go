@@ -2,11 +2,11 @@ package controllers
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/hexiaoyun128/gin-base-framework/common"
 	"github.com/hexiaoyun128/gin-base-framework/middles"
 	"github.com/hexiaoyun128/gin-base-framework/models"
 	"github.com/hexiaoyun128/gin-base-framework/services"
-	"github.com/gin-gonic/gin"
 )
 
 func IndexGet(c *gin.Context) {

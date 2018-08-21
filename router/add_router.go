@@ -1,13 +1,13 @@
 package router
 
 import (
+	"github.com/casbin/casbin"
+	"github.com/casbin/gorm-adapter"
+	"github.com/gin-gonic/gin"
 	"github.com/hexiaoyun128/gin-base-framework/common"
 	"github.com/hexiaoyun128/gin-base-framework/controllers"
 	"github.com/hexiaoyun128/gin-base-framework/initial_data"
 	"github.com/hexiaoyun128/gin-base-framework/middles"
-	"github.com/casbin/casbin"
-	"github.com/casbin/gorm-adapter"
-	"github.com/gin-gonic/gin"
 	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 	"path"

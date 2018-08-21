@@ -2,12 +2,12 @@ package middles
 
 import (
 	"crypto/rsa"
-	log "github.com/cihub/seelog"
 	"github.com/dgrijalva/jwt-go"
 	"time"
 
-	"github.com/hexiaoyun128/gin-base-framework/common"
 	"github.com/gin-gonic/gin"
+	"github.com/hexiaoyun128/gin-base-framework/common"
+	"go.uber.org/zap"
 	"io/ioutil"
 )
 
@@ -21,10 +21,10 @@ var (
 
 type JwtClaims struct {
 	*jwt.StandardClaims
-	Name      string
-	Role      []string
-	UserId    int
-	IsAdmin   bool
+	Name    string
+	Role    []string
+	UserId  int
+	IsAdmin bool
 }
 
 // Read the key files before starting http handlers
@@ -32,22 +32,22 @@ func InitKeys() {
 
 	signBytes, err := ioutil.ReadFile(common.ServerInfo.JwtPriKeyPath)
 	if err != nil {
-		log.Errorf("jwt private key file read failed: %s", err)
+		common.Logger.Fatal("jwt private key file read failed", zap.Error(err))
 	}
 
 	signKey, err = jwt.ParseRSAPrivateKeyFromPEM(signBytes)
 	if err != nil {
-		log.Errorf("jwt private key file parse failed: %s", err)
+		common.Logger.Fatal("jwt private key file parse failed", zap.Error(err))
 	}
 
 	verifyBytes, err := ioutil.ReadFile(common.ServerInfo.JwtPubKeyPath)
 	if err != nil {
-		log.Errorf("jwt public key file read failed: %s", err)
+		common.Logger.Fatal("jwt public key file read failed", zap.Error(err))
 	}
 
 	verifyKey, err = jwt.ParseRSAPublicKeyFromPEM(verifyBytes)
 	if err != nil {
-		log.Errorf("jwt public key file parse failed: %s", err)
+		common.Logger.Fatal("jwt public key file parse failed", zap.Error(err))
 	}
 }
 
@@ -66,7 +66,7 @@ func GenerateJWT(name string, role []string, userId int, isAdmin bool) string {
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
 	ss, err := token.SignedString(signKey)
 	if err != nil {
-		log.Errorf("token generator failed: %s", err)
+		common.Logger.Error("token generator failed", zap.Error(err))
 		return ""
 	}
 
@@ -84,7 +84,7 @@ func JwtAuthorize() gin.HandlerFunc {
 				return verifyKey, nil
 			})
 			if err != nil {
-				log.Errorf("token parse failed: %s", err)
+				common.Logger.Error("token parse failed")
 			}
 			if token.Valid {
 				jwtClaims := token.Claims.(*JwtClaims)
@@ -101,7 +101,7 @@ func JwtAuthorize() gin.HandlerFunc {
 				c.Set(common.TOKEN_VALID, false)
 				c.Set(common.LOGIN_COMPANY_ID, 0)
 				c.Set(common.LOGIN_COMPANY_REQUEST_NO, "")
-				log.Warn("token invalid")
+				common.Logger.Warn("token invalid")
 			}
 		}
 

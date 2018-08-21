@@ -1,9 +1,9 @@
 info:
   contact: {}
-  description: Dongjing server
+  description: gin-base-framework Server api
   license: {}
   termsOfService: https://github.com/hexiaoyun128
-  title: Dongjing Server api
+  title: gin-base-framework Server api
   version: "2.0"
 paths:
   /auth/banner_group:

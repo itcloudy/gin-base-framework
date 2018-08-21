@@ -1,9 +1,9 @@
 package controllers
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/hexiaoyun128/gin-base-framework/common"
 	amqp2 "github.com/hexiaoyun128/gin-base-framework/mqs/amqp"
-	"github.com/gin-gonic/gin"
 	"github.com/streadway/amqp"
 )
 

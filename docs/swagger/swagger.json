@@ -1,8 +1,8 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "Dongjing server",
-        "title": "Dongjing Server api",
+        "description": "gin-base-framework Server api",
+        "title": "gin-base-framework Server api",
         "termsOfService": "https://github.com/hexiaoyun128",
         "contact": {},
         "license": {},

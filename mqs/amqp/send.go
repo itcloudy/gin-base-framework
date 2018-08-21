@@ -3,8 +3,8 @@ package amqp
 import (
 	"github.com/hexiaoyun128/gin-base-framework/common"
 
-	log "github.com/cihub/seelog"
 	"github.com/streadway/amqp"
+	"go.uber.org/zap"
 )
 
 var (
@@ -29,11 +29,11 @@ func InitAmqpSend() {
 	)
 	SendConnection, err = amqp.Dial(common.SendMessageQueueInfo.Amqp.Url)
 	if err != nil {
-		log.Errorf("amqp Send connect failed: %s", err)
+		common.Logger.Error("amqp Send connect failed", zap.Error(err))
 	}
 	SendChannel, err = SendConnection.Channel()
 	if err != nil {
-		log.Errorf("amqp Send channel failed: %s", err)
+		common.Logger.Error("amqp Send channel failed", zap.Error(err))
 	}
 	SendQueue, err = SendChannel.QueueDeclare(
 		"block_chain", // name
@@ -44,7 +44,7 @@ func InitAmqpSend() {
 		nil,           // arguments
 	)
 	if err != nil {
-		log.Errorf("amqp Send queue declare failed: %s", err)
+		common.Logger.Error("amqp Send queue declare failed", zap.Error(err))
 	}
 }
 

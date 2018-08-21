@@ -4,7 +4,6 @@ import (
 	"github.com/hexiaoyun128/gin-base-framework/common"
 	"github.com/hexiaoyun128/gin-base-framework/models"
 	"github.com/hexiaoyun128/gin-base-framework/services"
-	log "github.com/cihub/seelog"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
@@ -12,6 +11,7 @@ import (
 
 	"fmt"
 	"github.com/hexiaoyun128/gin-base-framework/daemons"
+	"go.uber.org/zap"
 )
 
 type roleBase struct {
@@ -67,8 +67,8 @@ func AddRolePolicy(roleIds []int) {
 		}()
 
 		if daemons.RoleSystemApiEnforcerDaemon(policies) != nil {
-			log.Errorf("role casbin create  failed: %s ", err)
-			log.Flush()
+			common.Logger.Error("role casbin create  failed", zap.Error(err))
+
 			os.Exit(-1)
 		}
 	}
@@ -86,14 +86,14 @@ func initBaseRole() []int {
 	filePath := path.Join(common.WorkSpace, "role_data.yml")
 	roleData, err := ioutil.ReadFile(filePath)
 	if err != nil {
-		log.Errorf("role init file read failed: %s", err)
-		log.Flush()
+		common.Logger.Error("role init file read failed", zap.Error(err))
+
 		os.Exit(-1)
 	}
 	err = yaml.Unmarshal(roleData, &baseR)
 	if err != nil {
-		log.Errorf("role init data parse failed: %s", err)
-		log.Flush()
+		common.Logger.Error("role init data parse failed: %s", zap.Error(err))
+
 		os.Exit(-1)
 
 	}
@@ -124,16 +124,16 @@ func initBaseRole() []int {
 				var roleMenu models.RoleMenu
 				menu, err, _ = services.GetMenuByUniqueTag(tag)
 				if err != nil {
-					log.Errorf("get menu by unique tag:%s failed: %s ", tag, err)
-					log.Flush()
+					common.Logger.Error("get menu by unique tag failed", zap.Error(err))
+
 					os.Exit(-1)
 				} else {
 					roleMenu.MenuID = menu.ID
 					roleMenu.RoleID = reRole.ID
 					_, err = roleMenu.Create(tx)
 					if err != nil {
-						log.Errorf("create role menu failed : %s ,role: %+v,menu: %+v", err, reRole, menu)
-						log.Flush()
+						common.Logger.Error("create role menu failed", zap.Error(err))
+
 						os.Exit(-1)
 					}
 				}
@@ -148,16 +148,16 @@ func initBaseRole() []int {
 				)
 				systemAPI, err, _ = services.GetSystemAPIByThreeParams(api.Name, api.Method, api.Address)
 				if err != nil {
-					log.Errorf("get system api failed: %+v, %s ,api: %s ,%s, %s", role, err, api.Name, api.Method, api.Address)
-					log.Flush()
+					common.Logger.Error("get system api failed", zap.Error(err))
+
 					os.Exit(-1)
 				}
 				roleApi.SystemApiID = systemAPI.ID
 				roleApi.RoleID = reRole.ID
 				_, err = roleApi.Create(tx)
 				if err != nil {
-					log.Errorf("role Api create  failed: %s ", err)
-					log.Flush()
+					common.Logger.Error("role Api create  failed ", zap.Error(err))
+
 					os.Exit(-1)
 				} else {
 

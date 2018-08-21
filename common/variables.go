@@ -4,6 +4,7 @@ import (
 	"github.com/casbin/casbin"
 	"github.com/go-redis/redis"
 	"github.com/jinzhu/gorm"
+	"go.uber.org/zap"
 )
 
 var (
@@ -24,7 +25,8 @@ var (
 	ReceiveMessageQueueInfo *messageQueueModel // receive message queue config information
 	LogInfo                 *logModel          // log config information
 	InitInfo                *initModel         // init data config information
-	Image                   *image
-	Quartz                  *quartz
+	Image                   *image             // image size
+	Quartz                  *quartz            // cron task
+	Logger                  *zap.Logger        // log instance
 
 )

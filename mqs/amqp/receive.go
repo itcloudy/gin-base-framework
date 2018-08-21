@@ -2,9 +2,10 @@ package amqp
 
 import (
 	"fmt"
+
 	"github.com/hexiaoyun128/gin-base-framework/common"
-	log "github.com/cihub/seelog"
 	"github.com/streadway/amqp"
+	"go.uber.org/zap"
 	"time"
 )
 
@@ -29,11 +30,11 @@ func InitAmqpReceive() {
 	)
 	ReceiveConnection, err = amqp.Dial(common.ReceiveMessageQueueInfo.Amqp.Url)
 	if err != nil {
-		log.Errorf("amqp Receive connect failed: %s", err)
+		common.Logger.Error("amqp Receive connect failed", zap.Error(err))
 	}
 	ReceiveChannel, err = ReceiveConnection.Channel()
 	if err != nil {
-		log.Errorf("amqp Receive channel failed: %s", err)
+		common.Logger.Error("amqp Receive channel failed", zap.Error(err))
 	}
 	ReceiveQueue, err = ReceiveChannel.QueueDeclare(
 		"block_chain", // name
@@ -45,7 +46,7 @@ func InitAmqpReceive() {
 	)
 
 	if err != nil {
-		log.Errorf("amqp Receive queue declare failed: %s", err)
+		common.Logger.Error("amqp Receive queue declare failed", zap.Error(err))
 	}
 	go amqpReceiver()
 }
@@ -61,7 +62,7 @@ func amqpReceiver() {
 		nil,               // args
 	)
 	if err != nil {
-		log.Errorf("Failed to register a consumer: %s", err)
+		common.Logger.Error("Failed to register a consumer", zap.Error(err))
 	}
 
 	forever := make(chan bool)

@@ -1,17 +1,19 @@
 package system
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/go-redis/redis"
 	"github.com/hexiaoyun128/gin-base-framework/common"
 	"github.com/hexiaoyun128/gin-base-framework/initial_data"
 	"github.com/hexiaoyun128/gin-base-framework/middles"
 	"github.com/hexiaoyun128/gin-base-framework/models"
-	"github.com/hexiaoyun128/gin-base-framework/services"
-	"github.com/cihub/seelog"
-	"github.com/go-redis/redis"
 	"github.com/jinzhu/gorm"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"log"
 	"os"
 	"path"
 )
@@ -32,18 +34,16 @@ func LoadConfigInformation(configPath string) (err error) {
 	}
 	common.WorkSpace = wr
 	filePath = path.Join(common.WorkSpace, "config.yml")
-	fmt.Println(filePath)
 	configData, err := ioutil.ReadFile(filePath)
 	if err != nil {
-		seelog.Errorf(" config file read failed: %s", err)
-		seelog.Flush()
+		fmt.Printf(" config file read failed: %s", err)
 		os.Exit(-1)
 
 	}
 	err = yaml.Unmarshal(configData, &common.ConfigInfo)
 	if err != nil {
-		seelog.Errorf(" config parse failed: %s", err)
-		seelog.Flush()
+		fmt.Printf(" config parse failed: %s", err)
+
 		os.Exit(-1)
 	}
 	// admin user information
@@ -96,9 +96,8 @@ func LoadConfigInformation(configPath string) (err error) {
 
 	}
 	if err != nil || db == nil {
-		seelog.Errorf("database connect failed: %s", err)
-		seelog.Errorf("database config information: %v", common.DatabaseInfo)
-		seelog.Flush()
+		fmt.Printf("database connect failed: %s", err)
+		fmt.Printf("database config information: %v", common.DatabaseInfo)
 		os.Exit(-1)
 	}
 
@@ -115,35 +114,32 @@ func LoadConfigInformation(configPath string) (err error) {
 	common.AdminUserInfo = common.ConfigInfo.AdminUser
 
 	// log config load
-	if common.LogInfo.ConfigFile == "" {
+	if common.LogInfo.Mode == "basic" {
+		logPath := common.LogInfo.Path   //log path
+		logLevel := common.LogInfo.Level // log level
+		isDebug := true                  // log mode
+		if common.ServerInfo.Mode == "release" {
+			isDebug = false
+		}
+		initBasicLogger(logLevel, logPath, isDebug)
+		log.SetFlags(log.Lmicroseconds | log.Lshortfile | log.LstdFlags)
+	} else if common.LogInfo.Mode == "advanced" {
+		initAdvancedLogger()
+	}
 
-		filePath = path.Join(common.WorkSpace, "seelog.xml")
-	} else {
-		filePath = path.Join(common.LogInfo.ConfigFile, "seelog.xml")
-	}
-	log, err := seelog.LoggerFromConfigAsFile(filePath)
-	if err != nil {
-		seelog.Critical("err parsing see log config file", err)
-		seelog.Flush()
-		return
-	}
-	seelog.ReplaceLogger(log)
+	defer common.Logger.Sync()
+	common.Logger.Info("constructed a logger")
 	// init api
 	if common.InitInfo.Api {
-		log.Info("init api data")
 		initial_data.InitApi()
 	}
 	// init system data
 	if common.InitInfo.Menu {
-		log.Info("init menu data")
 		initial_data.InitMenu()
 	}
 	if common.InitInfo.Role {
-		log.Info("init role and policy data")
 		initial_data.InitBaseRole()
 	}
-
-
 
 	var user models.User
 	user.Name = common.AdminUserInfo.Name
@@ -158,30 +154,10 @@ func LoadConfigInformation(configPath string) (err error) {
 		user.SetPwd(nn)
 		user.IsAdmin = true
 		user.AdminAction(nn)
-		///*services.UserCreate(&user)
-		// 获得管理员角色
-		var roleSlice []models.Role
-		if admin, e, _ := services.GetRoleByCode("admin"); e == nil {
-			roleSlice = append(roleSlice, *admin)
-		}
-		common.DB.Model(user).Association("Roles").Append(roleSlice)
 	}
 	middles.InitKeys()
 
-	// hexiaoyun128
-
-	/*if common.hexiaoyun128Config.Enable {
-		common.hexiaoyun128Ins = &hexiaoyun128_sdk_golang.hexiaoyun128{}
-		common.hexiaoyun128Ins.Config = common.hexiaoyun128Config
-		// login
-		 common.hexiaoyun128Ins.AutoLogin()
-
-
-	}*/
-
-	// hexiaoyun128 login get token
 	// message queue init
-	//message queue init
 	//if system.ServerConfig.MqEnable {
 	//	amqp.InitAmqpSend()
 	//	amqp.InitAmqpReceive()
@@ -190,4 +166,88 @@ func LoadConfigInformation(configPath string) (err error) {
 	//}
 	return
 
+}
+func initBasicLogger(logLevel string, logPath string, isDebug bool) {
+	fmt.Println(os.Remove(logPath))
+	if _, err := os.Open(logPath); err != nil && os.IsNotExist(err) {
+		p, _ := os.Getwd()
+		logPath = path.Join(p, "logs")
+		os.Mkdir(logPath, os.ModePerm)
+		logPath = path.Join(logPath, "gin-base-framework.log")
+		os.Create(logPath)
+	} else {
+		os.Remove(logPath)
+		os.Create(logPath)
+	}
+
+	var js string
+	if isDebug {
+		js = fmt.Sprintf(`{
+              "level": "%s",
+              "encoding": "json",
+              "outputPaths": ["stdout","%s"],
+              "errorOutputPaths": ["stdout"]
+              }`, logLevel, logPath)
+	} else {
+		js = fmt.Sprintf(`{
+              "level": "%s",
+              "encoding": "json",
+              "outputPaths": ["%s"],
+              "errorOutputPaths": ["%s"]
+              }`, logLevel, logPath, logPath)
+	}
+
+	var cfg zap.Config
+	if err := json.Unmarshal([]byte(js), &cfg); err != nil {
+		panic(err)
+	}
+	cfg.EncoderConfig = zap.NewProductionEncoderConfig()
+	cfg.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+	var err error
+	common.Logger, err = cfg.Build()
+	if err != nil {
+		common.Logger.Error("init logger error: ", zap.String("err", err.Error()))
+	} else {
+		common.Logger.Info("log init")
+	}
+	common.Logger.Sync()
+}
+func initAdvancedLogger() {
+	// First, define our level-handling logic.
+	highPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+		return lvl >= zapcore.ErrorLevel
+	})
+	lowPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+		return lvl < zapcore.ErrorLevel
+	})
+
+	// Assume that we have clients for two Kafka topics. The clients implement
+	// zapcore.WriteSyncer and are safe for concurrent use. (If they only
+	// implement io.Writer, we can use zapcore.AddSync to add a no-op Sync
+	// method. If they're not safe for concurrent use, we can add a protecting
+	// mutex with zapcore.Lock.)
+	topicDebugging := zapcore.AddSync(ioutil.Discard)
+	topicErrors := zapcore.AddSync(ioutil.Discard)
+
+	// High-priority output should also go to standard error, and low-priority
+	// output should also go to standard out.
+	consoleDebugging := zapcore.Lock(os.Stdout)
+	consoleErrors := zapcore.Lock(os.Stderr)
+
+	// Optimize the Kafka output for machine consumption and the console output
+	// for human operators.
+	kafkaEncoder := zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig())
+	consoleEncoder := zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig())
+
+	// Join the outputs, encoders, and level-handling functions into
+	// zapcore.Cores, then tee the four cores together.
+	core := zapcore.NewTee(
+		zapcore.NewCore(kafkaEncoder, topicErrors, highPriority),
+		zapcore.NewCore(consoleEncoder, consoleErrors, highPriority),
+		zapcore.NewCore(kafkaEncoder, topicDebugging, lowPriority),
+		zapcore.NewCore(consoleEncoder, consoleDebugging, lowPriority),
+	)
+
+	// From a zapcore.Core,it's easy to construct a Logger.
+	common.Logger = zap.New(core)
 }

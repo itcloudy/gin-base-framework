@@ -117,8 +117,6 @@ func UserCreate(user *models.User) (*models.User, error, int) {
 
 	tx.Model(user).Association("Roles").Append(roleSlice)
 
-
-
 	return user, err, code
 }
 

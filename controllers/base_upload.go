@@ -1,10 +1,10 @@
 package controllers
 
 import (
-	"github.com/hexiaoyun128/gin-base-framework/common"
 	"github.com/gin-gonic/gin"
-	"strings"
+	"github.com/hexiaoyun128/gin-base-framework/common"
 	"github.com/hexiaoyun128/gin-base-framework/storage"
+	"strings"
 )
 
 // @tags  通用
@@ -46,7 +46,6 @@ func ImageUpload(c *gin.Context) {
 	}
 	common.GenResponse(c, common.SUCCESSED, filePath, "success")
 }
-
 
 func MultiUpload(c *gin.Context) {
 	/*form, _ := c.MultipartForm()
