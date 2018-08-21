@@ -1,5 +1,5 @@
 # ignore
-log/
+logs/
 upload_files/
 .idea/
 gin-base-framework
