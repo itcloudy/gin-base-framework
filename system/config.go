@@ -194,7 +194,6 @@ func LoadConfigInformation(configPath string) (err error) {
 
 }
 func initBasicLogger(logLevel string, logPath string, isDebug bool) {
-	fmt.Println(os.Remove(logPath))
 	if _, err := os.Open(logPath); err != nil && os.IsNotExist(err) {
 		p, _ := os.Getwd()
 		logPath = path.Join(p, "logs")

@@ -21,11 +21,6 @@ type User struct {
 	OpenId          string  `json:"openid" form:"openid" gorm:"unique"`                                            // 微信openID
 	IsActive        bool    `gorm:"default:true" json:"active" form:"active"`                                      // 是否有效
 	IsAdmin         bool    `gorm:"default:false" json:"is_admin" form:"is_admin"`                                 // 是否为管理员
-	ChainTableID    int     `json:"chain_table_id"`                                                                // 链上数据ID
-	ChainTableName  string  `json:"chain_table_name"`                                                              // 链上表名
-	BlockID         int     `json:"block_id"`                                                                      // 区块ID
-	HashContent     string  `json:"hash_content"`                                                                  // 上链返回hash值
-	ChainErr        string  `json:"chain_err"`                                                                     // 上链返回的错误信息
 }
 
 func (user *User) Create(db *gorm.DB) (*User, error) {

@@ -36,3 +36,5 @@ docker build -t gin-base-framework .
 ```
 ## 功能说明及相关文档
 - [Elasticsearch部署](elasticsearch.md)
+## QQ群
+![](QQ20180913-0.jpg)
