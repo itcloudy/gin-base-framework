@@ -4,6 +4,6 @@ upload_files/
 .idea/
 gin-base-framework
 *.exe
-
+conf/config.yml
 
 .DS_Store
