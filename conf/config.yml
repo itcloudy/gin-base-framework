@@ -33,7 +33,7 @@ database:
 
 
 elastic:
-  enable: true
+  enable: false
   server_address:
     - http://127.0.0.1:9200
   sniffer_enabled: false
@@ -115,9 +115,3 @@ image:
 quartz:
   # 统计公司专业分数、服务分数(每天1点)
   update_score_time: "*/1 * * * * ?"
-  # 重置公司编辑次数(每月1号1点)
-  update_company_edit_count_time: "0 0 1 1 * ?"
-  # 统计访问次数
-  init_visit_count_time: "0 0 1 * * ?"
-  # 公司等级降级
-  company_level_down_time: "0 0 1 * * ?"
