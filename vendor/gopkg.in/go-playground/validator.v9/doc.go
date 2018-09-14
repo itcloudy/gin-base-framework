@@ -587,6 +587,14 @@ does any email provider accept all posibilities.
 
 	Usage: email
 
+File path
+
+This validates that a string value contains a valid file path and that 
+the file exists on the machine. 
+This is done using os.Stat, which is a platform independent function. 
+
+	Usage: file
+	
 URL String
 
 This validates that a string value contains a valid url
@@ -894,6 +902,27 @@ Full Qualified Domain Name (FQDN)
 This validates that a string value contains a valid FQDN.
 
 	Usage: fqdn
+
+HTML Tags
+
+This validates that a string value appears to be an HTML element tag
+including those described at https://developer.mozilla.org/en-US/docs/Web/HTML/Element
+
+	Usage: html
+
+HTML Encoded
+
+This validates that a string value is a proper character reference in decimal
+or hexadecimal format
+
+	Usage: html_encoded
+
+URL Encoded
+
+This validates that a string value is percent-encoded (URL encoded) according
+to https://tools.ietf.org/html/rfc3986#section-2.1
+
+	Usage: url_encoded
 
 Alias Validators and Tags
 

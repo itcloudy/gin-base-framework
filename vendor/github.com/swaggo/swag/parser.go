@@ -41,6 +41,9 @@ type Parser struct {
 	// TypeDefinitions is a map that stores [package name][type name][*ast.TypeSpec]
 	TypeDefinitions map[string]map[string]*ast.TypeSpec
 
+	// CustomPrimitiveTypes is a map that stores custom primitive types to actual golang types [type name][string]
+	CustomPrimitiveTypes map[string]string
+
 	//registerTypes is a map that stores [refTypeName][*ast.TypeSpec]
 	registerTypes map[string]*ast.TypeSpec
 
@@ -64,9 +67,10 @@ func New() *Parser {
 				Definitions: make(map[string]spec.Schema),
 			},
 		},
-		files:           make(map[string]*ast.File),
-		TypeDefinitions: make(map[string]map[string]*ast.TypeSpec),
-		registerTypes:   make(map[string]*ast.TypeSpec),
+		files:                make(map[string]*ast.File),
+		TypeDefinitions:      make(map[string]map[string]*ast.TypeSpec),
+		CustomPrimitiveTypes: make(map[string]string),
+		registerTypes:        make(map[string]*ast.TypeSpec),
 	}
 	return parser
 }
@@ -290,7 +294,7 @@ func (parser *Parser) ParseRouterAPIInfo(astFile *ast.File) {
 				operation := NewOperation() //for per 'function' comment, create a new 'Operation' object
 				operation.parser = parser
 				for _, comment := range astDeclaration.Doc.List {
-					if err := operation.ParseComment(comment.Text); err != nil {
+					if err := operation.ParseComment(comment.Text, astFile); err != nil {
 						log.Panicf("ParseComment panic:%+v", err)
 					}
 				}
@@ -333,7 +337,14 @@ func (parser *Parser) ParseType(astFile *ast.File) {
 		if generalDeclaration, ok := astDeclaration.(*ast.GenDecl); ok && generalDeclaration.Tok == token.TYPE {
 			for _, astSpec := range generalDeclaration.Specs {
 				if typeSpec, ok := astSpec.(*ast.TypeSpec); ok {
-					parser.TypeDefinitions[astFile.Name.String()][typeSpec.Name.String()] = typeSpec
+					typeName := fmt.Sprintf("%v", typeSpec.Type)
+					// check if its a custom primitive type
+					if IsGolangPrimitiveType(typeName) {
+						parser.CustomPrimitiveTypes[typeSpec.Name.String()] = typeName
+					} else {
+						parser.TypeDefinitions[astFile.Name.String()][typeSpec.Name.String()] = typeSpec
+					}
+
 				}
 			}
 		}
@@ -441,22 +452,25 @@ type structField struct {
 	arrayType    string
 	formatType   string
 	isRequired   bool
+	crossPkg     string
 	exampleValue interface{}
 }
 
 func (parser *Parser) parseStruct(pkgName string, field *ast.Field) (properties map[string]spec.Schema) {
 	properties = map[string]spec.Schema{}
-	// name, schemaType, arrayType, formatType, exampleValue :=
 	structField := parser.parseField(field)
 	if structField.name == "" {
 		return
 	}
 	var desc string
 	if field.Doc != nil {
-		desc = field.Doc.Text()
+		desc = strings.TrimSpace(field.Doc.Text())
 	}
-
 	// TODO: find package of schemaType and/or arrayType
+
+	if structField.crossPkg != "" {
+		pkgName = structField.crossPkg
+	}
 	if _, ok := parser.TypeDefinitions[pkgName][structField.schemaType]; ok { // user type field
 		// write definition if not yet present
 		parser.ParseDefinition(pkgName, parser.TypeDefinitions[pkgName][structField.schemaType], structField.schemaType)
@@ -543,6 +557,7 @@ func (parser *Parser) parseStruct(pkgName string, field *ast.Field) (properties 
 					props[k] = v
 				}
 			}
+
 			properties[structField.name] = spec.Schema{
 				SchemaProps: spec.SchemaProps{
 					Type:        []string{structField.schemaType},
@@ -576,7 +591,7 @@ func (parser *Parser) parseAnonymousField(pkgName string, field *ast.Field, prop
 }
 
 func (parser *Parser) parseField(field *ast.Field) *structField {
-	prop := getPropertyName(field)
+	prop := getPropertyName(field, parser)
 	if len(prop.ArrayType) == 0 {
 		CheckSchemaType(prop.SchemaType)
 	} else {
@@ -586,6 +601,7 @@ func (parser *Parser) parseField(field *ast.Field) *structField {
 		name:       field.Names[0].Name,
 		schemaType: prop.SchemaType,
 		arrayType:  prop.ArrayType,
+		crossPkg:   prop.CrossPkg,
 	}
 
 	switch parser.PropNamingStrategy {
