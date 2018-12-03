@@ -13,7 +13,7 @@ var doc = `{
     "info": {
         "description": "gin-base-framework Server api",
         "title": "gin-base-framework Server api",
-        "termsOfService": "https://github.com/hexiaoyun128",
+        "termsOfService": "https://github.com/itcloudy",
         "contact": {},
         "license": {},
         "version": "2.0"

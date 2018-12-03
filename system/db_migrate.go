@@ -1,7 +1,7 @@
 package system
 
 import (
-	"github.com/hexiaoyun128/gin-base-framework/models"
+	"github.com/itcloudy/gin-base-framework/models"
 	"github.com/jinzhu/gorm"
 )
 

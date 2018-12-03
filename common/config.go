@@ -11,7 +11,6 @@ type initModel struct {
 	CompanyLevel bool `yaml:"company_level"` // init company level information
 	Category     bool `yaml:"category"`      // init category
 	Api          bool `yaml:"api"`           // init api
-	hexiaoyun128 bool `yaml:"hexiaoyun128"`  // init hexiaoyun128 table information
 	Language     bool `yaml:"language"`      // init language
 }
 

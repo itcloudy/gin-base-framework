@@ -2,8 +2,8 @@ package services
 
 import (
 	"fmt"
-	"github.com/hexiaoyun128/gin-base-framework/common"
-	"github.com/hexiaoyun128/gin-base-framework/models"
+	"github.com/itcloudy/gin-base-framework/common"
+	"github.com/itcloudy/gin-base-framework/models"
 	"strconv"
 	"strings"
 )

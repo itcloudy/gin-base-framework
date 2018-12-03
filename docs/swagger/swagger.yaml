@@ -2,7 +2,7 @@ info:
   contact: {}
   description: gin-base-framework Server api
   license: {}
-  termsOfService: https://github.com/hexiaoyun128
+  termsOfService: https://github.com/itcloudy
   title: gin-base-framework Server api
   version: "2.0"
 paths:

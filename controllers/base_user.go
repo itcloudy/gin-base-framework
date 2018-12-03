@@ -3,9 +3,9 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"github.com/hexiaoyun128/gin-base-framework/common"
-	"github.com/hexiaoyun128/gin-base-framework/models"
-	"github.com/hexiaoyun128/gin-base-framework/services"
+	"github.com/itcloudy/gin-base-framework/common"
+	"github.com/itcloudy/gin-base-framework/models"
+	"github.com/itcloudy/gin-base-framework/services"
 	"github.com/pkg/errors"
 	"strconv"
 )

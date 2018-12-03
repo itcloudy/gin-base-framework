@@ -1,16 +1,16 @@
 package initial_data
 
 import (
-	"github.com/hexiaoyun128/gin-base-framework/common"
-	"github.com/hexiaoyun128/gin-base-framework/models"
-	"github.com/hexiaoyun128/gin-base-framework/services"
+	"github.com/itcloudy/gin-base-framework/common"
+	"github.com/itcloudy/gin-base-framework/models"
+	"github.com/itcloudy/gin-base-framework/services"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 	"path"
 
 	"fmt"
-	"github.com/hexiaoyun128/gin-base-framework/daemons"
+	"github.com/itcloudy/gin-base-framework/daemons"
 	"go.uber.org/zap"
 )
 
@@ -122,6 +122,7 @@ func initBaseRole() []int {
 			for _, tag := range role.MenuUniqueTags {
 				var menu *models.Menu
 				var roleMenu models.RoleMenu
+				fmt.Println(tag)
 				menu, err, _ = services.GetMenuByUniqueTag(tag)
 				if err != nil {
 					common.Logger.Error("get menu by unique tag failed", zap.Error(err))

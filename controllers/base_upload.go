@@ -2,9 +2,10 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hexiaoyun128/gin-base-framework/common"
-	"github.com/hexiaoyun128/gin-base-framework/storage"
+	"github.com/itcloudy/gin-base-framework/common"
+	"github.com/itcloudy/gin-base-framework/storage"
 	"strings"
+	"fmt"
 )
 
 // @tags  通用
@@ -27,13 +28,13 @@ func ImageUpload(c *gin.Context) {
 		sufixList = strings.Split(header.Filename, ".")
 		sufix = sufixList[(len(sufixList) - 1)]
 		if strings.Index(common.UPLOAD_FILE_MIME, sufix) == -1 {
-			common.GenResponse(c, common.UPLOAD_FILE_CREATE_ERR, nil, "只允许上传 "+common.UPLOAD_FILE_MIME+"的图片")
+			common.GenResponse(c, common.UPLOAD_FILE_CREATE_ERR, nil, "only can upload "+common.UPLOAD_FILE_MIME+" image")
 			return
 		}
 		// 限制图片大小
 		size := 1024 * 1024 * common.Image.Size
 		if header.Size > int64(size) {
-			common.GenResponse(c, common.UPLOAD_FILE_CREATE_ERR, nil, "图片太大！")
+			common.GenResponse(c, common.UPLOAD_FILE_CREATE_ERR, nil, fmt.Sprintf("size of image bigger than %d",common.Image.Size))
 			return
 		}
 		if filePath, err = storage.FileLocalStorage(file, header.Filename); err != nil {

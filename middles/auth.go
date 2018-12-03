@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/casbin/casbin"
 	"github.com/gin-gonic/gin"
-	"github.com/hexiaoyun128/gin-base-framework/common"
+	"github.com/itcloudy/gin-base-framework/common"
 	"net/http"
 )
 

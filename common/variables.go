@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	WorkSpace               string             //config
+	WorkSpace               string             // config
 	DB                      *gorm.DB           // database contains
 	RedisClient             *redis.Client      // redis client
 	Enforcer                *casbin.Enforcer   // casbin

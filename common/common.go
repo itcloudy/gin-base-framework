@@ -33,7 +33,7 @@ type GroupPolicyAction struct {
 //GenResponse genrate reponse ,json format
 func GenResponse(c *gin.Context, code int, data interface{}, message string) {
 	if ServerInfo.Mode == "release" {
-		message = GetResponseMessage(code)
+		message =  GetResponseMessage(code)
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"code":    code,

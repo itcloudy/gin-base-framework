@@ -1,6 +1,6 @@
 package utils
 
-import "gopkg.in/go-playground/validator.v9"
+import "github.com/itcloudy/validator"
 
 //校验密码至少8位且必须包含数字，大小写字母，特殊字符
 func ValidatePassword(fl validator.FieldLevel) bool {

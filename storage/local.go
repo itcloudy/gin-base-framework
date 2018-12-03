@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"crypto/md5"
 	"encoding/hex"
-	"github.com/hexiaoyun128/gin-base-framework/common"
+	"github.com/itcloudy/gin-base-framework/common"
 	"io"
 	"mime/multipart"
 	"os"

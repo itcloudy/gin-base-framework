@@ -1,23 +1,24 @@
 package system
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/go-redis/redis"
-	"github.com/hexiaoyun128/gin-base-framework/common"
-	"github.com/hexiaoyun128/gin-base-framework/initial_data"
-	"github.com/hexiaoyun128/gin-base-framework/middles"
-	"github.com/hexiaoyun128/gin-base-framework/models"
-	"github.com/jinzhu/gorm"
-	"gopkg.in/olivere/elastic.v5"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
 	"os"
 	"path"
-	"context"
+
+	"github.com/go-redis/redis"
+	"github.com/itcloudy/gin-base-framework/common"
+	"github.com/itcloudy/gin-base-framework/initial_data"
+	"github.com/itcloudy/gin-base-framework/middles"
+	"github.com/itcloudy/gin-base-framework/models"
+	"github.com/jinzhu/gorm"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
+	"gopkg.in/olivere/elastic.v5"
+	"gopkg.in/yaml.v2"
 )
 
 //LoadConfigInformation load config information for application
@@ -80,8 +81,8 @@ func LoadConfigInformation(configPath string) (err error) {
 	common.LogInfo = common.ConfigInfo.Log
 	// init information
 	common.InitInfo = common.ConfigInfo.Init
-	// hexiaoyun128 config information
-	//common.hexiaoyun128Config = common.ConfigInfo.hexiaoyun128SDK
+	// itcloudy config information
+	//common.itcloudyConfig = common.ConfigInfo.itcloudySDK
 	// iamge size
 	common.Image = common.ConfigInfo.Image
 	// quartz task

@@ -1,7 +1,7 @@
 package amqp
 
 import (
-	"github.com/hexiaoyun128/gin-base-framework/common"
+	"github.com/itcloudy/gin-base-framework/common"
 
 	"github.com/streadway/amqp"
 	"go.uber.org/zap"

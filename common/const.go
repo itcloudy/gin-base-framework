@@ -29,7 +29,7 @@ const (
 	MOBILE_REPEAT = 2012
 	// openid 为空
 	OPEN_ID_IS_EMPITY = 2013
-	//hexiaoyun128登录失败
+	//itcloudy登录失败
 	// 密码错误
 	PASSWORD_INVALID = 2022
 	// 请求成功
@@ -77,6 +77,8 @@ const (
 	GET_OPEN_ID_FAILED = 121
 )
 const (
+	// Accept-Language
+	ACCEPT_LANGUAGE = "ACCEPT_LANGUAGE"
 	// login user name
 	LOGIN_USER_NAME = "LOGIN_USER_NAME"
 	// login user id
@@ -100,14 +102,7 @@ const (
 	//default dorder
 	DEFAULT_ORDER = "id desc"
 )
-const (
-	// 当日进店人数
-	TODAY_IP_ARRAY = "TODAY_IP_ARRAY"
-	// 当天商家申请数量
-	TODAY_COMPANY_APPLY_TOTAL = "TODAY_COMPANY_APPLY_TOTAL"
-	// 当天总访问数
-	TODAY_VIEWS = "TODAY_VIEWS"
-)
+
 
 const UPLOAD_FILE_URL = "/upload_files/"
 const SYSTEM_STATIC_FILE_URL = "/system_statics/"

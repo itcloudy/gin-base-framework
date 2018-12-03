@@ -1,10 +1,11 @@
 package services
 
 import (
-	"github.com/hexiaoyun128/gin-base-framework/common"
-	"github.com/hexiaoyun128/gin-base-framework/models"
-	"gopkg.in/go-playground/validator.v9"
+	"github.com/itcloudy/gin-base-framework/common"
+	"github.com/itcloudy/gin-base-framework/models"
+	"github.com/itcloudy/validator"
 	"strings"
+
 )
 
 //SystemApiCreate   create  collection
@@ -22,7 +23,6 @@ func SystemApiCreate(model *models.SystemApi) (*models.SystemApi, error, int) {
 		code = common.DATA_VALIDATE_ERR
 		return nil, err, code
 	}
-
 	tx := common.DB.Begin()
 	defer func() {
 		if err == nil {

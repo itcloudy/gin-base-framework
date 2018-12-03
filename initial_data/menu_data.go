@@ -5,9 +5,9 @@ import (
 	"io/ioutil"
 
 	"fmt"
-	"github.com/hexiaoyun128/gin-base-framework/common"
-	"github.com/hexiaoyun128/gin-base-framework/models"
-	"github.com/hexiaoyun128/gin-base-framework/services"
+	"github.com/itcloudy/gin-base-framework/common"
+	"github.com/itcloudy/gin-base-framework/models"
+	"github.com/itcloudy/gin-base-framework/services"
 	"go.uber.org/zap"
 	"os"
 	"path"

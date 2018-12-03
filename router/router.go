@@ -2,8 +2,8 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hexiaoyun128/gin-base-framework/common"
-	"github.com/hexiaoyun128/gin-base-framework/middles"
+	"github.com/itcloudy/gin-base-framework/common"
+	"github.com/itcloudy/gin-base-framework/middles"
 )
 
 //setTemplate set template
@@ -26,6 +26,7 @@ func InitRouter() *gin.Engine {
 
 	router := gin.Default()
 
+	router.Use(middles.RequestLanguages())
 	router.Use(middles.Cors())
 	router.Use(middles.VisitHistory())
 	// set template

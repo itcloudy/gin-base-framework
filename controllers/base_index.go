@@ -3,10 +3,10 @@ package controllers
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/hexiaoyun128/gin-base-framework/common"
-	"github.com/hexiaoyun128/gin-base-framework/middles"
-	"github.com/hexiaoyun128/gin-base-framework/models"
-	"github.com/hexiaoyun128/gin-base-framework/services"
+	"github.com/itcloudy/gin-base-framework/common"
+	"github.com/itcloudy/gin-base-framework/middles"
+	"github.com/itcloudy/gin-base-framework/models"
+	"github.com/itcloudy/gin-base-framework/services"
 )
 
 func IndexGet(c *gin.Context) {
@@ -38,6 +38,6 @@ func RefreshToken(c *gin.Context) {
 		token := middles.GenerateJWT(user.Name, roleList, user.ID, user.IsAdmin)
 		common.GenResponse(c, common.SUCCESSED, token, "success")
 	} else {
-		common.GenResponse(c, code, nil, " refresh token failed")
+		common.GenResponse(c, code, nil, "refresh token failed")
 	}
 }

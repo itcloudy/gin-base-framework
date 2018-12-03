@@ -1,7 +1,7 @@
 package crons
 
 import (
-	"github.com/hexiaoyun128/gin-base-framework/common"
+	"github.com/itcloudy/gin-base-framework/common"
 	"github.com/robfig/cron"
 )
 

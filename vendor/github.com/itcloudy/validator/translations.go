@@ -1,6 +1,6 @@
 package validator
 
-import ut "github.com/go-playground/universal-translator"
+import ut "github.com/itcloudy/universal-translator"
 
 // TranslationFunc is the function type used to register or override
 // custom translations

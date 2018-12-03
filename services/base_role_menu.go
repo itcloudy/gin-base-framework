@@ -1,8 +1,8 @@
 package services
 
 import (
-	"github.com/hexiaoyun128/gin-base-framework/common"
-	"github.com/hexiaoyun128/gin-base-framework/models"
+	"github.com/itcloudy/gin-base-framework/common"
+	"github.com/itcloudy/gin-base-framework/models"
 )
 
 //RoleMenuCreate menu create

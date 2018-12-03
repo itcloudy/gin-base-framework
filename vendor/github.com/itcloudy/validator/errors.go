@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"strings"
 
-	ut "github.com/go-playground/universal-translator"
+	ut "github.com/itcloudy/universal-translator"
 )
 
 const (

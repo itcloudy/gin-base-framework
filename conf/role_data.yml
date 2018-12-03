@@ -3,16 +3,9 @@ roles:
   - name: 管理员
     code: admin
     menus: # 为menu中的unique_tag
-      - admin-home # 首页（管理员）
       - companyManage # 公司管理(管理员)
       - companyAudit # 公司资质审核
       - companyManage-list # 公司列表
-      - appConfig # 小程序配置
-      - bannerConfig # banner图设置
-      - buttonConfig # 九宫格配置
-      - admin-messageManage # 留言管理（管理员）
-      - company-messageManage # 用户留言
-      - manageReply # 商家回复
     api_list:
       # 首页
       - name: 管理员首页

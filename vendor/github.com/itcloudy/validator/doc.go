@@ -5,7 +5,7 @@ based on tags.
 It can also handle Cross-Field and Cross-Struct validation for nested structs
 and has the ability to dive into arrays and maps of any type.
 
-see more examples https://github.com/go-playground/validator/tree/v9/_examples
+see more examples https://github.com/itcloudy/validator/tree/v9/_examples
 
 Validation Functions Return Type error
 
@@ -18,7 +18,7 @@ The authors return type "error" to avoid the issue discussed in the following,
 where err is always != nil:
 
 	http://stackoverflow.com/a/29138676/3158232
-	https://github.com/go-playground/validator/issues/134
+	https://github.com/itcloudy/validator/issues/134
 
 Validator only InvalidValidationError for bad validation input, nil or
 ValidationErrors as type error; so, in your code all you need to do is check

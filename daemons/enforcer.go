@@ -1,7 +1,7 @@
 package daemons
 
 import (
-	"github.com/hexiaoyun128/gin-base-framework/common"
+	"github.com/itcloudy/gin-base-framework/common"
 )
 
 func RoleSystemApiEnforcerDaemon(policies []common.PolicyAction) (err error) {

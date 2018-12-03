@@ -155,6 +155,12 @@
 			"revisionTime": "2018-09-13T20:31:01Z"
 		},
 		{
+			"checksumSHA1": "IW7tXGQQnxLsL/cK8TWPLo2uKFk=",
+			"path": "github.com/itcloudy/validator",
+			"revision": "15dfe6b827a04bacf70d3809684f4584d0de5971",
+			"revisionTime": "2018-09-19T05:50:42Z"
+		},
+		{
 			"path": "github.com/jinzhu/gorm",
 			"revision": ""
 		},
@@ -333,12 +339,6 @@
 			"revisionTime": "2017-07-30T05:02:35Z"
 		},
 		{
-			"checksumSHA1": "LcpDN/u5Z3GhXVqGDdsuiMdGoww=",
-			"path": "gopkg.in/go-playground/validator.v9",
-			"revision": "e69e9a28bb62b977fdc58d051f1bb477b7cbe486",
-			"revisionTime": "2018-08-13T14:34:31Z"
-		},
-		{
 			"checksumSHA1": "IS6HPUDFtwHLtwqJ3tT+YSCmXaM=",
 			"path": "gopkg.in/olivere/elastic.v5",
 			"revision": "3e286de24663bc6190e62ce29b69d5ef05ae2835",
@@ -363,5 +363,5 @@
 			"revisionTime": "2018-03-28T19:50:20Z"
 		}
 	],
-	"rootPath": "github.com/hexiaoyun128/gin-base-framework"
+	"rootPath": "github.com/itcloudy/gin-base-framework"
 }
