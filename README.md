@@ -1,5 +1,6 @@
 # Gin Base Framework
 
+## 建议使用新框架 [https://github.com/itcloudy/base-framework/tree/2.0](https://github.com/itcloudy/base-framework/tree/2.0)
 ## [目录说明](tree.md) 
 
 将`conf/config_bak.yml`修改为`conf/config.yml`
