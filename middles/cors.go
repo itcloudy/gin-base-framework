@@ -24,7 +24,7 @@ func Cors() gin.HandlerFunc {
 		}
 		if origin != "" {
 			//下面的都是乱添加的-_-~
-			// c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		        c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 			c.Header("Access-Control-Allow-Origin", "*")
 			c.Header("Access-Control-Allow-Headers", "*")
 			c.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
